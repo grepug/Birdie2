@@ -1,0 +1,65 @@
+<template lang="jade">
+  LoginView(@on-getvalicode="getValiCode", @on-login="login", :phone.sync="phone", :valicode.sync="valicode")
+
+</template>
+
+<script>
+  import loginview from '../components/login'
+  import AV from '../js/AV'
+  import vali from '../js/validate'
+  import cookie from 'js-cookie'
+
+  export default {
+    components: {
+      loginview
+    },
+    data () {
+      return {
+        phone: '',
+        valicode: ''
+      }
+    },
+    methods: {
+      getValiCode () {
+        if (!vali().phone(this.phone)) return console.log('手机号格式不对')
+        AV.Cloud.requestSmsCode(this.phone).then(function (ret) {
+          console.log('验证码发送成功')
+        }).catch(function (err) {
+          console.log(err)
+        })
+      },
+      login (method) {
+        console.log(this.$log('phone'))
+        switch (method) {
+          case 'wx':
+            break
+          default:
+            // if (!vali().phone(this.phone)) return console.log('手机号格式不对')
+            // if (!vali().veriCode(this.valicode)) return console.log('验证码格式不对')
+            // AV.User.signUpOrlogInWithMobilePhone(this.phone, this.valicode).then(function (ret) {
+            //   console.log('登录成功')
+            // }).catch(function (err) {
+            //   console.log(err)
+            // })
+
+            var userinfo = JSON.parse(cookie.get('wx_userinfo').slice(2))
+            console.log(userinfo)
+            AV.User.logInWithMobilePhone(this.phone, this.valicode).then(function (ret) {
+              console.log(ret)
+              return ret.save({
+                openid: userinfo.openid,
+                headimgurl: userinfo.headimgurl,
+                sex: userinfo.sex
+              })
+            }).then(function () {
+              window.location.reload()
+            }).catch(function (err) {
+              console.log(err)
+            })
+            break
+        }
+      }
+    }
+  }
+
+</script>
