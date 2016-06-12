@@ -66,6 +66,9 @@ export default {
     click (name) {
       window.location = '#!/' + name
     }
+  },
+  ready () {
+    return
   }
 }
 </script>

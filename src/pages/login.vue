@@ -48,6 +48,7 @@
               console.log(ret)
               return ret.save({
                 openid: userinfo.openid,
+                nickname: userinfo.nickname,
                 headimgurl: userinfo.headimgurl,
                 sex: userinfo.sex
               })
