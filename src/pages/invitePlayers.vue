@@ -9,14 +9,14 @@
   main
     .list
       Cells(type="checkbox")
-        Checkbox-Cell(:label="el.nickname", name="checkbox", :value="el.objectId", :checked.sync="checked", v-for="el in list")
+        Checkbox-Cell(:label="el.nickname", name="checkbox", :value="index + ''", :checked.sync="checked", v-for="(index, el) in list")
 
 </template>
 
 <script>
   import navbarview from '../components/navbar'
   import {Cells, CheckboxCell} from 'vue-weui'
-  import matchRoom from '../js/matchRoom'
+  // import matchRoom from '../js/matchRoom'
   import AV from '../js/AV'
   // import $ from '../js/Dom7'
 
@@ -37,11 +37,17 @@
         window.history.back()
       },
       confirm () {
-        matchRoom.init(this.checked.filter(x => x)).then((ret) => {
-          console.log(ret)
-          window.history.back()
+        if (!this.checked.length) return
+        AV.Cloud.run('match', {
+          method: 'invite',
+          cid: this.$route.params.cid,
+          invitee: this.checked.map(x => {
+            return {
+              openid: this.list[x].openid,
+              objectId: this.list[x].objectId
+            }
+          })
         })
-        return
       }
     },
     ready () {

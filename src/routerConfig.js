@@ -1,4 +1,5 @@
 import AV from './js/AV'
+import store from './vuex/store'
 
 export default function (router) {
   router.map({
@@ -25,6 +26,8 @@ export default function (router) {
         transition.redirect('/login')
       }
     } else {
+      store.dispatch('USERLOGED')
+      store.dispatch('SET_USEROBJ', AV.User.current())
       if (transition.to.path === '/login') {
         transition.redirect('/')
       }

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import VueTouch from 'vue-touch'
 import routerConfig from './routerConfig'
 import Mint from 'mint-ui'
+import store from './vuex/store'
 
 Vue.use(Router)
 Vue.use(VueTouch)
@@ -16,4 +17,4 @@ var router = new Router({
 
 routerConfig(router)
 
-router.start(Vue.extend({}), '#app')
+router.start(Vue.extend({store}), '#app')

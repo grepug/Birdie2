@@ -1,4 +1,5 @@
 import AV from './AV'
+import _ from 'underscore'
 import {
   Realtime,
   Message,
@@ -7,34 +8,84 @@ import {
 
 var realtime
 var userObj = AV.User.current()
-const userId = userObj.id
+var __conv
+const userId = userObj && userObj.id
+
+window.TextMessage = TextMessage
 
 realtime = new Realtime({
   appId: 'SXHKYLU066nSzpRhnqNoLK7v-gzGzoHsz',
   region: 'cn'
 })
 
-console.log(realtime);
+function create (_this) {
 
-function init (members) {
-
-  // Tom 用自己的名字作为 clientId，获取 IMClient 对象实例
-  return realtime.createIMClient(userId).then(function(room) {
-    // 创建与Jerry之间的对话
-    console.log(room)
-    return room.createConversation({
-      members: members,
+  return realtime.createIMClient(userId).then(function(cli) {
+    cli.on('message', function (msg) {
+      console.log(msg)
+    })
+    cli.on('membersleft', function (payload, conversation) {
+      console.log(payload.members, payload.kickedBy, conversation.id)
+    })
+    return cli.createConversation({
+      members: [],
       name: '对战房' + new Date().getTime()
     })
-  }).then(function(conversation) {
-    // 发送消息
-    return conversation.send(new TextMessage('耗子，起床！'));
+  }).then(function (conv) {
+    __conv = conv
+    return conv.on('membersjoined', function memberjoinedEventHandler(payload) {
+      console.log(payload.members, payload.invitedBy)
+      if (payload.members.indexOf(userId) === -1) {
+        if (!_.findWhere(_this.list, {title: payload.members[0]})) {
+          _this.list.push({
+            title: payload.members[0],
+            after: 'a'
+          })
+          _this.toastText = '有人进来了'
+        }
+        // var msg = new TextMessage()
+        // msg.setAttributes({list, method: 'memberList'})
+        // conv.send(msg)
+        sendOrder(_this.list, null)
+      }
+    })
   }).catch(function (err) {
     console.log(err)
   })
 
 }
 
+function join (cid, _this) {
+  return realtime.createIMClient(userId).then(function (cli) {
+    return cli.getConversation(cid)
+  }).then(function (conv) {
+    window.conv = conv
+    __conv = conv
+    conv.on('message', function (msg) {
+      var attr = msg.attributes
+      if (attr === 'memberList') {
+        attr.list && _this.$set('list', attr.list)
+        attr.matchSettings && _this.$set('matchSettings', attr.matchSettings)
+        _this.toastText = `有人进来了`
+      }
+    })
+    conv.on('membersjoined', function () {
+      console.log(arguments[0])
+    })
+    return conv.join()
+  })
+}
+
+function sendOrder (order, matchSettings) {
+
+  var msg = new TextMessage()
+  msg.setAttributes({list: order, matchSettings, method: 'memberList'})
+  __conv && __conv.send(msg)
+
+}
+
 export default {
-  init
+  create,
+  join,
+  sendOrder
 }

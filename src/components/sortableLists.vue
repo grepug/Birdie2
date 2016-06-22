@@ -6,8 +6,8 @@
           .item-media(v-if="el.img")
             img(:src="el.img")
           .item-inner
-            .item-title {{el.title}}
-            .item-after {{el.after}}
+            .item-title {{{el.title}}}
+            .item-after {{{el.after}}}
         .sortable-handler
 </template>
 
@@ -24,10 +24,16 @@
     },
     ready () {
       sortable.initSortable()
-      sortable.sortableToggle('.sortable')
+      // sortable.sortableToggle('.sortable')
       $('.sortable').on('sort', () => {
         this.$dispatch('on-sort', null)
       })
+    },
+    events: {
+      'sortable-toggle': function () {
+        console.log(1)
+        sortable.sortableToggle('.sortable')
+      }
     }
   }
 </script>
