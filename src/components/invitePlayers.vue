@@ -16,7 +16,7 @@
 <script>
   import navbarview from './navbar'
   import {Cells, CheckboxCell} from 'vue-weui'
-  import {getAllUsers} from '../vuex/actions'
+  import {getAllUsers} from '../vuex/actions/user'
   // import AV from '../js/AV'
 
   export default {
@@ -73,7 +73,9 @@
       }
     },
     ready () {
-      this.getAllUsers()
+      this.getAllUsers().then(ret => {
+        this.list = ret
+      })
     }
   }
 </script>

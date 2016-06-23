@@ -4,7 +4,7 @@ import {
   Realtime,
   Message,
   TextMessage
-  } from '../../node_modules/leancloud-realtime/dist/realtime.browser'
+} from '../../node_modules/leancloud-realtime/dist/realtime.browser'
 
 var realtime
 var userObj = AV.User.current()
@@ -35,17 +35,15 @@ function create (_this) {
     __conv = conv
     return conv.on('membersjoined', function memberjoinedEventHandler(payload) {
       console.log(payload.members, payload.invitedBy)
-      if (payload.members.indexOf(userId) === -1) {
+      if (payload.members.indexOf(userId) === -1) { // unless the creator
         if (!_.findWhere(_this.list, {title: payload.members[0]})) {
           _this.list.push({
             title: payload.members[0],
             after: 'a'
           })
+          _this.changeTeams(_this.list)
           _this.toastText = '有人进来了'
         }
-        // var msg = new TextMessage()
-        // msg.setAttributes({list, method: 'memberList'})
-        // conv.send(msg)
         sendOrder(_this.list, null)
       }
     })

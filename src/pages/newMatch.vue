@@ -30,6 +30,7 @@
   import matchRoom from '../js/matchRoom'
   import sortable from '../js/sortable'
   import {getUserObj} from '../vuex/getters'
+  import {changeTeams} from '../vuex/actions/match'
 
   export default {
     components: {
@@ -46,7 +47,7 @@
         userObj: getUserObj
       },
       actions: {
-
+        changeTeams
       }
     },
     data () {
@@ -61,6 +62,11 @@
         cid: '',
         toastText: '',
         isInvitePlayersPopupShow: false
+      }
+    },
+    computed: {
+      list () {
+        return []
       }
     },
     methods: {
