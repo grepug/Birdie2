@@ -1,35 +1,36 @@
 <template lang="jade">
-  NavbarView
-    .left
-      a.link(v-link="'/'")
-        i.fa.fa-arrow-left
-    .center 登录
-    .right
-  main
-    form
-      ul
-        li
-          .item-content
-            .item-media
-              i.fa.fa-user
-            .item-inner.with-button
-              .item-title 手机号
-              .item-input
-                input(type="tel", placeholder="手机号", v-model="phone")
-              .item-button
-                button(type="button", @click="getValiCode()") {{getValiCodeText}}
-        li
-          .item-content
-            .item-media
-              i.fa.fa-user
-            .item-inner
-              .item-title 验证码
-              .item-input
-                input(type="tel", placeholder="验证码", v-model="valicode")
-      .content-block
-        .button-block
-          a.button.center(href="javascript:;", @click="login()") 登录
-          a.button.center(href="javascript:;", @click="login('wx')") 微信登录
+  div
+    navbar-view
+      .left
+        a.link(v-link="'/'")
+          i.fa.fa-arrow-left
+      .center 登录
+      .right
+    main
+      form
+        ul
+          li
+            .item-content
+              .item-media
+                i.fa.fa-user
+              .item-inner.with-button
+                .item-title 手机号
+                .item-input
+                  input(type="tel", placeholder="手机号", v-model="phone")
+                .item-button
+                  button(type="button", @click="getValiCode()") {{getValiCodeText}}
+          li
+            .item-content
+              .item-media
+                i.fa.fa-user
+              .item-inner
+                .item-title 验证码
+                .item-input
+                  input(type="tel", placeholder="验证码", v-model="valicode")
+        .content-block
+          .button-block
+            a.button.center(href="javascript:;", @click="login()") 登录
+            a.button.center(href="javascript:;", @click="login('wx')") 微信登录
 
 </template>
 
@@ -164,13 +165,13 @@
 </style>
 
 <script>
-  import navbarview from '../components/navbar'
+  import navbarView from '../components/navbar'
 
   var counting = false
 
   export default {
     components: {
-      navbarview
+      navbarView
     },
     data () {
       return {

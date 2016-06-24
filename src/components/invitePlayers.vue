@@ -1,54 +1,73 @@
 <template lang="jade">
-  .popup(v-show="isInvitePlayersPopupShow")
-    NavbarView
-      .left
-        a.link(href="javascript:;", @click="back")
-          i.fa.fa-arrow-left
-      .center 邀请
-      .right
-        a.link(href="javascript:;", @click="confirm") 确认
-    main
-      .list
-        Cells(type="checkbox")
-          Checkbox-Cell(:label="el.nickname", name="checkbox", :value="index + ''", :checked.sync="checked", v-for="(index, el) in list")
+  div
+    .popup(v-show="isInvitePlayersPopupShow")
+      navbar-view
+        .left
+          a.link(href="javascript:;", @click="back")
+            i.fa.fa-arrow-left
+        .center 邀请
+        .right
+          a.link(href="javascript:;", @click="confirm") 确认
+      main
+        .list
+          cells(type="checkbox")
+            checkbox-cell(:label="el.nickname", name="checkbox", :value="index + ''", :checked.sync="checked", v-for="(index, el) in list")
+    toast-view(:text="toastText")
 </template>
 
 <script>
-  import navbarview from './navbar'
+  import navbarView from './navbar'
+  import toastView from '../components/toast'
   import {Cells, CheckboxCell} from 'vue-weui'
   import {getAllUsers} from '../vuex/actions/user'
-  // import AV from '../js/AV'
+  import {addMatchRoomInvitees} from '../vuex/actions/match'
+  import {getMembers} from '../vuex/getters'
+  import AV from '../js/AV'
+  import matchRoom from '../js/matchRoomWd'
 
   export default {
     components: {
-      navbarview,
+      navbarView,
       Cells,
-      CheckboxCell
+      CheckboxCell,
+      toastView
     },
     vuex: {
       actions: {
-        getAllUsers
+        getAllUsers,
+        addMatchRoomInvitees
+      },
+      getters: {
+        members: getMembers,
+        roomId: (state) => state.match.matchRoomStates.roomId,
+        allUsers: (state) => state.user.userObjs,
+        matchRoomInvitees: (state) => state.match.matchRoomStates.invitees
       }
     },
     props: {
       isInvitePlayersPopupShow: {
         type: Boolean,
         default: true
+      }
+    },
+    data () {
+      return {
+        toastText: ''
+      }
+    },
+    computed: {
+      list () {
+        console.log(this.allUsers)
+        return this.allUsers.map(el => {
+          return {
+            openid: el.openid,
+            nickname: el.nickname,
+            objectId: el.objectId
+          }
+        })
       },
-      list: {
-        type: Array,
-        default () {
-          return []
-        }
-      },
-      checked: {
-        type: Array,
-        default () {
-          return []
-        }
-      },
-      cid: {
-        type: String
+      checked () {
+        return []
       }
     },
     methods: {
@@ -56,26 +75,29 @@
         this.isInvitePlayersPopupShow = false
       },
       confirm () {
-        console.log(this.checked)
-        console.log(this.cid)
-        return
-        // if (!this.checked.length) return
-        // AV.Cloud.run('match', {
-        //   method: 'invite',
-        //   cid: this.$route.params.cid,
-        //   invitee: this.checked.map(x => {
-        //     return {
-        //       openid: this.list[x].openid,
-        //       objectId: this.list[x].objectId
-        //     }
-        //   })
-        // })
+        var invitee
+        console.log(this.checked.length)
+        if (!this.checked.length) return
+        invitee = this.checked.map(x => {
+          return {
+            openid: this.list[x].openid,
+            objectId: this.list[x].objectId
+          }
+        })
+        AV.Cloud.run('match', {
+          method: 'invite',
+          roomId: this.roomId,
+          invitee
+        }).then(ret => {
+          matchRoom.addInvitees(invitee.map(el => el.objectId), this)
+          setTimeout(() => {
+            this.isInvitePlayersPopupShow = false
+          }, 500)
+        }).catch(err => console.log(err))
       }
     },
     ready () {
-      this.getAllUsers().then(ret => {
-        this.list = ret
-      })
+      this.getAllUsers()
     }
   }
 </script>

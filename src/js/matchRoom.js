@@ -1,4 +1,3 @@
-import AV from './AV'
 import _ from 'underscore'
 import {
   Realtime,
@@ -7,9 +6,7 @@ import {
 } from '../../node_modules/leancloud-realtime/dist/realtime.browser'
 
 var realtime
-var userObj = AV.User.current()
 var __conv
-const userId = userObj && userObj.id
 
 window.TextMessage = TextMessage
 
@@ -19,8 +16,9 @@ realtime = new Realtime({
 })
 
 function create (_this) {
-
-  return realtime.createIMClient(userId).then(function(cli) {
+  window.vm = _this
+  return realtime.createIMClient(_this.userObj.id).then(function(cli) {
+    console.log(cli)
     cli.on('message', function (msg) {
       console.log(msg)
     })
@@ -37,14 +35,12 @@ function create (_this) {
       console.log(payload.members, payload.invitedBy)
       if (payload.members.indexOf(userId) === -1) { // unless the creator
         if (!_.findWhere(_this.list, {title: payload.members[0]})) {
-          _this.list.push({
-            title: payload.members[0],
-            after: 'a'
-          })
-          _this.changeTeams(_this.list)
+          _this.addMember(payload.members[0])
+          // _this.changeTeams(_this.list)
+          _this.addOthersUserObj(_.flatten(_this.list))
           _this.toastText = '有人进来了'
         }
-        sendOrder(_this.list, null)
+        sendOrder(_this.members, null)
       }
     })
   }).catch(function (err) {
@@ -54,24 +50,39 @@ function create (_this) {
 }
 
 function join (cid, _this) {
-  return realtime.createIMClient(userId).then(function (cli) {
+  window.vm = _this
+  return realtime.createIMClient(_this.userObj.id).then(function (cli) {
+    console.log(cli)
     return cli.getConversation(cid)
   }).then(function (conv) {
     window.conv = conv
     __conv = conv
-    conv.on('message', function (msg) {
+    console.log('当前 Conversation 的成员列表：', conv.members);
+    return conv
+  }).then(cov => {
+    return conv.join()
+  }).then(ret => {
+    console.log('加入成功', ret)
+    _this.toastText = '加入成功'
+    console.log(_this.userObj.id)
+    _this.addMember(_this.userObj.id)
+    _this.onSort()
+
+    __conv.on('message', function (msg) {
+      console.log('msg', msg)
       var attr = msg.attributes
-      if (attr === 'memberList') {
-        attr.list && _this.$set('list', attr.list)
-        attr.matchSettings && _this.$set('matchSettings', attr.matchSettings)
+      if (attr.method === 'memberList') {
+        // attr.list && _this.$set('list', attr.list)
+        attr.list && _this.changeTeams(attr.list)
+        // attr.matchSettings && _this.$set('matchSettings', attr.matchSettings)
+        attr.matchSettings && _this.changeMatchSettings(attr.matchSettings)
         _this.toastText = `有人进来了`
       }
     })
-    conv.on('membersjoined', function () {
+    __conv.on('membersjoined', function () {
       console.log(arguments[0])
     })
-    return conv.join()
-  })
+  }).catch(err => console.log(err))
 }
 
 function sendOrder (order, matchSettings) {

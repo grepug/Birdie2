@@ -1,13 +1,13 @@
 <template lang="jade">
   .list-block.sortable
     ul
-      li(v-for="(index, el) in list", :class="{'team2-first': (list.length / 2) === index}")
+      li(v-for="(index, el) in list", :class="{'team2-first': (list.length / 2) === index}", :data-id="el.id")
         .item-content
           .item-media(v-if="el.img")
             img(:src="el.img")
           .item-inner
-            .item-title {{{el.title}}}
-            .item-after {{{el.after}}}
+            .item-title(v-text="el.title")
+            .item-after(v-text="el.after")
         .sortable-handler
 </template>
 
@@ -22,6 +22,13 @@
         type: Array
       }
     },
+    vuex: {
+      action: {
+        sortable: ({dispatch}) => {
+          dispatch('UI_SORTABLE_SORTED', true)
+        }
+      }
+    },
     ready () {
       sortable.initSortable()
       // sortable.sortableToggle('.sortable')
@@ -31,7 +38,6 @@
     },
     events: {
       'sortable-toggle': function () {
-        console.log(1)
         sortable.sortableToggle('.sortable')
       }
     }

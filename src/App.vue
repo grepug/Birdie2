@@ -1,52 +1,53 @@
 <template lang="jade">
-  navbar-view
-    .left
-      a(href="javascript:;")
-    .center Birdie
-    .right
-      a.link(v-link="{path: '/friends'}")
-        i.fa.fa-user
-      a.link(href="javascript:;", v-touch:tap="openMenu")
-        i.fa.fa-plus
-  swiper-view
-    .swiper-slide
-      img(src="./assets/ex.jpg")
-    .swiper-slide
-      img(src="./assets/ex.jpg")
-    .swiper-slide
-      img(src="./assets/ex.jpg")
-  main
-    ActionSheet(:actions="actions", :show.sync="actionSheetShow", :menus="menus", :title="title", @weui-menu-click="click", @weui-menu-cancel="cancel()")
-      p 内容
-      p hahah
-    section.grid
-      .row
-        div
-          a(v-link="{path: '/newMatch'}") 发起比赛
-        div
-          a(href="javascript:;") 比赛历史
-        div
-          a(href="javascript:;") 邀请历史
-      .row
-        div
-          a(v-link="{path: '/friends'}") 附近球友
-        div
-          a(href="javascript:;") 啦啦啦
-        div
-          a(v-link="{path: '/user'}") 用户中心
+  div
+    navbar-view
+      .left
+        a(href="javascript:;")
+      .center Birdie
+      .right
+        a.link(v-link="{path: '/friends'}")
+          i.fa.fa-user
+        a.link(href="javascript:;", v-touch:tap="openMenu")
+          i.fa.fa-plus
+    swiper-view
+      .swiper-slide
+        img(src="./assets/ex.jpg")
+      .swiper-slide
+        img(src="./assets/ex.jpg")
+      .swiper-slide
+        img(src="./assets/ex.jpg")
+    main
+      action-sheet(:actions="actions", :show.sync="actionSheetShow", :menus="menus", :title="title", @weui-menu-click="click", @weui-menu-cancel="cancel()")
+        p 内容
+        p hahah
+      section.grid
+        .row
+          div
+            a(v-link="{path: '/newMatch'}") 发起比赛
+          div
+            a(href="javascript:;") 比赛历史
+          div
+            a(href="javascript:;") 邀请历史
+        .row
+          div
+            a(v-link="{path: '/friends'}") 附近球友
+          div
+            a(href="javascript:;") 啦啦啦
+          div
+            a(v-link="{path: '/user'}") 用户中心
 </template>
 
 <script>
 import navbarView from './components/navbar'
 import swiperView from './components/swiper'
 import 'font-awesome-webpack'
-import {Actionsheet} from 'vue-weui'
+import {ActionSheet} from 'vue-weui'
 
 export default {
   components: {
     navbarView,
     swiperView,
-    Actionsheet
+    ActionSheet
   },
   data () {
     return {

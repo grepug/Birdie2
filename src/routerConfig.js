@@ -12,9 +12,6 @@ export default function (router) {
     '/newMatch': {
       component: require('./pages/newMatch')
     },
-    'newMatch/invitePlayers/:cid': {
-      component: require('./pages/invitePlayers')
-    },
     '/friends': {
       component: require('./pages/Friends')
     }

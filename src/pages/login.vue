@@ -1,17 +1,17 @@
 <template lang="jade">
-  LoginView(@on-getvalicode="getValiCode", @on-login="login", :phone.sync="phone", :valicode.sync="valicode")
-
+  div
+    login-view(@on-getvalicode="getValiCode", @on-login="login", :phone.sync="phone", :valicode.sync="valicode")
 </template>
 
 <script>
-  import loginview from '../components/login'
+  import loginView from '../components/login'
   import AV from '../js/AV'
   import vali from '../js/validate'
   import cookie from 'js-cookie'
 
   export default {
     components: {
-      loginview
+      loginView
     },
     data () {
       return {
