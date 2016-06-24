@@ -17,7 +17,7 @@
       .swiper-slide
         img(src="./assets/ex.jpg")
     main
-      action-sheet(:actions="actions", :show.sync="actionSheetShow", :menus="menus", :title="title", @weui-menu-click="click", @weui-menu-cancel="cancel()")
+      actionsheet(:actions="actions", :show.sync="actionSheetShow", :menus="menus", :title="title", @weui-menu-click="click", @weui-menu-cancel="cancel()")
         p 内容
         p hahah
       section.grid
@@ -41,13 +41,14 @@
 import navbarView from './components/navbar'
 import swiperView from './components/swiper'
 import 'font-awesome-webpack'
-import {ActionSheet} from 'vue-weui'
+import {Actionsheet} from 'vue-weui'
 
+console.log(Actionsheet)
 export default {
   components: {
     navbarView,
     swiperView,
-    ActionSheet
+    Actionsheet
   },
   data () {
     return {

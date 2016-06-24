@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import storage from './storage'
 import general from './modules/general'
 import user from './modules/user'
 import match from './modules/match'
@@ -13,7 +14,8 @@ export default new Vuex.Store({
     user,
     match,
     ui
-  }
+  },
+  middlewares: [storage]
   // state,
   // mutations
 })

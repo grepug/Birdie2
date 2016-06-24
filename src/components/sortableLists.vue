@@ -1,13 +1,13 @@
 <template lang="jade">
   .list-block.sortable
     ul
-      li(v-for="(index, el) in list", :class="{'team2-first': (list.length / 2) === index}", :data-id="el.id")
+      li(v-for="(index, el) in list", :class="{'team2-first': (list.length / 2) === index}", :data-id="el.id", @click="onLiPress(index)")
         .item-content
           .item-media(v-if="el.img")
             img(:src="el.img")
           .item-inner
             .item-title(v-text="el.title")
-            .item-after(v-text="el.after")
+            .item-after {{{el.after}}}
         .sortable-handler
 </template>
 
@@ -35,6 +35,11 @@
       $('.sortable').on('sort', () => {
         this.$dispatch('on-sort', null)
       })
+    },
+    methods: {
+      onLiPress (index) {
+        this.$dispatch('on-li-press', index)
+      }
     },
     events: {
       'sortable-toggle': function () {

@@ -12,6 +12,9 @@ export default function (router) {
     '/newMatch': {
       component: require('./pages/newMatch')
     },
+    '/scoringPage': {
+      component: require('./pages/scoringPage')
+    },
     '/friends': {
       component: require('./pages/Friends')
     }
@@ -29,6 +32,13 @@ export default function (router) {
         transition.redirect('/')
       }
     }
+
+    if (transition.to.path === '/scoringPage') {
+      if (store.state.general.state !== 'matchUmpiring') {
+        transition.abort()
+      }
+    }
+
     transition.next()
   })
 }

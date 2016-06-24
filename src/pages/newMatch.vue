@@ -8,7 +8,8 @@
       .right
         a.link(href="javascript:;", @click="invitePlayers", v-if="isHost") 邀请
     main
-      sortable-view(:list="list", @on-sort="onSort")
+      actionsheet(:actions="actions", :show.sync="actionSheetShow", :menus="actionSheetMenus", :title="title", @weui-menu-click="click", @weui-menu-cancel="cancel")
+      sortable-view(:list="list", @on-sort="onSort", @on-li-press="onLiPress")
       section.match-settings
         select-cell(:after="true", :options="[{text: '三局两胜', value: 3},{text: '五局三胜', value: 5}, {text: '一局一胜', value: 1}]", :selected.sync="matchSettings.bestOf")
           span(slot="header") 局数
@@ -26,7 +27,7 @@
   import sortableView from '../components/sortableLists'
   import toastView from '../components/toast'
   import invitePlayersView from '../components/invitePlayers'
-  import {SelectCell, Button} from 'vue-weui'
+  import {SelectCell, Button, Actionsheet} from 'vue-weui'
   import $ from 'jquery'
   import _ from 'underscore'
   import matchRoom from '../js/matchRoomWd'
@@ -44,6 +45,7 @@
       toastView,
       invitePlayersView,
       SelectCell,
+      Actionsheet,
       'weui-button': Button
     },
     vuex: {
@@ -74,17 +76,28 @@
       return {
         cid: '',
         toastText: '',
-        isInvitePlayersPopupShow: false
+        isInvitePlayersPopupShow: false,
+        actionSheetShow: false,
+        actionSheetMenus: {
+          kick: '移出房间',
+          appointHost: '转让房主'
+        },
+        actions: {
+          action1: '取消'
+        }
       }
     },
     computed: {
       list () {
         var members = _.flatten(this.members)
+        var after = (sex) => {
+          return sex === 1 ? '<i class="fa fa-mars"></i>' : '<i class="fa fa-venus"></i>'
+        }
         return members.map(id => {
           if (id === this.userObj.id) {
             return {
               title: this.userObj.get('nickname'),
-              after: this.userObj.get('sex'),
+              after: after(this.userObj.get('sex')),
               id: this.userObj.id
             }
           }
@@ -92,7 +105,7 @@
           if (r) {
             return {
               title: r.nickname,
-              after: r.sex,
+              after: after(r.sex),
               id: r.objectId
             }
           }
@@ -118,6 +131,10 @@
         var order = getOrder()
         matchRoom.sendOrder(order)
       },
+      onLiPress (index) {
+        // if (this.members[index] === this.userObj.id) return
+        this.actionSheetShow = true
+      },
       addTeamIndicator () {
         var memberLen = $('.sortable li').length
         $('.sortable ul li').removeClass('team1').removeClass('team2')
@@ -141,6 +158,7 @@
     ready () {
       var roomId = this.$route.query.roomId
       if (roomId) {
+        $('select').attr('disabled', '')
         matchRoom.join(this, roomId)
         this.setGeneralState('matchPreparingNonHost')
         this.toastText = '加入房间'
@@ -218,16 +236,26 @@
     }
     .sortable ul {
       li {
-        color: #000;
+        color: #fff;
+        .fa {
+          font-size: 1.1rem;
+          color: #fff;
+        }
+        // .fa-mars {
+        //   color: #09f;
+        // }
+        // .fa-venus {
+        //   color: #f6c;
+        // }
       }
       .team1 {
-        background-color: red;
+        background-color: #f60;
       }
       .team2 {
-        background-color: blue;
+        background-color: lighten(blue, 15%);
       }
       .umpire {
-        background-color: yellow;
+        background-color: lighten(yellow, 15%);
       }
     }
    }

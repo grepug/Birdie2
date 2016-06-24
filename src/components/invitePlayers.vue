@@ -84,6 +84,7 @@
             objectId: this.list[x].objectId
           }
         })
+        console.log(invitee)
         AV.Cloud.run('match', {
           method: 'invite',
           roomId: this.roomId,
