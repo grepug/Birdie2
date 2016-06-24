@@ -55,7 +55,6 @@
     "vue-html-loader": "*",
     "vue-loader": "^8.5.3",
     "vue-touch": "^1.1.0",
-    "vue-video": "^0.1.0",
     "vue-weui": "*",
     "webpack": "*",
     "webpack-merge": "^0.14.0",
