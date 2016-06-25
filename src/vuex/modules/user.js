@@ -7,7 +7,7 @@ const state = {
 }
 
 const mutations = {
-  USERLOGED (state) {
+  ['USERLOGED'] (state) {
     state.isUserLoged = true
   },
   ['SET_USEROBJ'] (state, userObj) {

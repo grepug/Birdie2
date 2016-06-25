@@ -8,7 +8,7 @@
       .right
         a.link(href="javascript:;", @click="invitePlayers", v-if="isHost") 邀请
     main
-      actionsheet(:actions="actions", :show.sync="actionSheetShow", :menus="actionSheetMenus", :title="title", @weui-menu-click="click", @weui-menu-cancel="cancel")
+      actionsheet(:actions="actions", :show.sync="actionSheetShow", :menus="actionSheetMenus", :title="title", @weui-menu-click="menusClick", @weui-menu-cancel="menusCancel")
       sortable-view(:list="list", @on-sort="onSort", @on-li-press="onLiPress")
       section.match-settings
         select-cell(:after="true", :options="[{text: '三局两胜', value: 3},{text: '五局三胜', value: 5}, {text: '一局一胜', value: 1}]", :selected.sync="matchSettings.bestOf")
@@ -133,6 +133,12 @@
       onLiPress (index) {
         // if (this.members[index] === this.userObj.id) return
         this.actionSheetShow = true
+      },
+      menusClick () {
+        return
+      },
+      menusCancel () {
+        return
       },
       addTeamIndicator () {
         var memberLen = $('.sortable li').length

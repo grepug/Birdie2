@@ -34,9 +34,9 @@ export default function (router) {
     }
 
     if (transition.to.path === '/scoringPage') {
-      if (store.state.general.state !== 'matchUmpiring') {
-        transition.abort()
-      }
+      // if (store.state.general.state !== 'matchUmpiring') {
+      //   transition.abort()
+      // }
     }
 
     transition.next()
