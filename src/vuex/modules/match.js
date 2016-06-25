@@ -1,3 +1,5 @@
+import _ from 'underscore'
+
 const state = {
   teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
   umpire: [],
@@ -8,7 +10,6 @@ const state = {
     intervalScore: 2,
     gameIntervalDuration: 60
   },
-  roomId: null,
   matchRoomStates: {
     roomId: null,
     invitees: [],
@@ -29,6 +30,7 @@ const state = {
     "0": 0,
     "1": 0
   },
+  lastScoredTeamIndex: null,
   gameNumber: 1,
   isGameInterval: false,
   gameIntervalTimer: 0
@@ -71,6 +73,7 @@ const mutations = {
       scoredTeam: team,
       duration: state.matchDuration
     })
+    state.lastScoredTeamIndex = team
   },
   ['RESET_GAME_SCORES'] (state) {
     state.scores = {'0': 0, '1': 0}
@@ -100,6 +103,12 @@ const mutations = {
   ['REMOVE_GAME_INTERVAL'] (state) {
     state.isGameInterval = false
     state.gameIntervalTimer = 0
+  },
+  ['UNDO_LAST_SCORE'] (state) {
+    var len = state.scoresFlow.length
+    state.scores[state.lastScoredTeamIndex]--
+    state.scoresFlow.length = len - 1
+    state.lastScoredTeamIndex = state.scoresFlow.length ? _.last(state.scoresFlow).scoredTeam : null
   }
 }
 

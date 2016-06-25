@@ -10,9 +10,15 @@
     main
       versus-view(:teams="teams", :points="scores", @on-add-point="addScore")
       sortable-lists-view(:list="toolList")
+      .buttons
+        a.button(href="javascript:;", @click="undo") 撤销
+        a.button(href="javascript:;", @click="withdrawl") 退赛
+        a.button(href="javascript:;", @click="pause") 暂停
       dialog(v-show="isGameInterval", type="alert", title="中场间歇", confirm-button="取消间歇", @weui-dialog-confirm="removeGameInterval")
         h4(style="text-align: center") 中场间歇还有{{gameIntervalTimer}}秒
       dialog(v-show="matchCompleted", type="alert", title="比赛结束", confirm-button="查看结果", @weui-dialog-confirm="viewResult")
+      dialog(v-show="confirmDialogShow", type="confirm", title="提示", confirm-button="确定", @weui-dialog-confirm="confirm", @weui-dialog-cancel="confirmDialogShow = false")
+        p(v-text="confirmDialogText")
     toast-view
 
 </template>
@@ -101,8 +107,12 @@
             var willWinTheMatch = willWinTheGame && (Math.ceil(match.matchSettings.bestOf / 2) === match.matchScores[index])
             if (willWinTheMatch) { // 赢得一场比赛
               console.log('match win')
-              clock.cancel() // 停下时钟
-              dispatch('CHANGE_MATCH_STATE', 'completed')
+              if (window.confirm('完成比赛？还是撤销上一分')) {
+                clock.cancel() // 停下时钟
+                dispatch('CHANGE_MATCH_STATE', 'completed')
+              } else {
+                dispatch('UNDO_LAST_SCORE', index)
+              }
             } else {
               dispatch('ADD_GAME_NUMBER')
               dispatch('EXCHANGE_SIDES')
@@ -114,11 +124,15 @@
         removeGameInterval: ({dispatch}) => {
           dispatch('REMOVE_GAME_INTERVAL')
           timer.cancel(timer.timer)
-        }
+        },
+        undoAction: ({dispatch}) => dispatch('UNDO_LAST_SCORE')
       }
     },
     data () {
       return {
+        confirmDialogShow: false,
+        confirmDialogText: '',
+        confirmDialogState: null
       }
     },
     methods: {
@@ -128,6 +142,31 @@
       },
       viewResult () {
         this.$router.go()
+      },
+      undo () {
+        var match = this.$store.state.match
+        if (match.matchState !== 'playing') return
+        if (!match.scoresFlow.length) return
+        this.confirmDialogText = '确定撤销上一分？'
+        this.confirmDialogState = 'undo'
+        this.confirmDialogShow = true
+      },
+      withdrawl () {
+        return
+      },
+      pause () {
+        return
+      },
+      confirm () {
+        switch (this.confirmDialogState) {
+          case 'undo':
+            this.undoAction()
+            break
+          case 'pause':
+            break
+        }
+        this.confirmDialogShow = false
+        return
       }
     },
     computed: {
@@ -173,5 +212,16 @@
 </script>
 
 <style lang="less">
-
+  main {
+    .buttons {
+      width: 100%;
+      text-align: center;
+      .button {
+        display: inline-block;
+        width: 25%;
+        border: 1px solid;
+        margin-right: 1rem;
+      }
+    }
+  }
 </style>
