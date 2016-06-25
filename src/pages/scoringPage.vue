@@ -22,8 +22,11 @@
     sortableListsView
   } from '../components'
   import sortable from '../js/sortable'
-  import clock from '../js/Clock'
+  import Clock from '../js/Clock'
   import _ from 'underscore'
+
+  const timer = new Clock()
+  const clock = new Clock()
 
   export default {
     components: {
@@ -54,8 +57,33 @@
       actions: {
         clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur),
         addScore: ({dispatch, state}, index) => {
-          if (state.match.sideExchanged) index = index === 0 ? 1 : 0
-          dispatch('CHANGE_MATCH_SCORES', index)
+          var match = state.match
+          if (match.sideExchanged) index = index === 0 ? 1 : 0
+          dispatch('CHANGE_GAME_SCORES', index)
+          var opponentIndex = index === 0 ? 1 : 0
+          var currentScoredTeamScore = match.scores[index]
+          var currentOpponentTeamScore = match.scores[opponentIndex]
+          var diff = currentScoredTeamScore - currentOpponentTeamScore
+          console.log(currentScoredTeamScore)
+          console.log(currentOpponentTeamScore)
+          if (match.matchSettings.intervalScore && currentScoredTeamScore === match.matchSettings.intervalScore) {
+            dispatch('SET_GAME_INTERVAL')
+            timer.initTimer(10, (secs) => {
+              dispatch('SET_GAME_INTERVAL_TIMER', secs)
+              if (secs <= 0) dispatch('REMOVE_GAME_INTERVAL')
+            })
+          }
+          if (diff >= 2 && currentScoredTeamScore >= match.matchSettings.scoringSys) { // 得分方赢得一局比赛
+            console.log('complete')
+            dispatch('PUSH_MATCH_GAME', index)
+            if (Math.ceil(match.matchSettings.bestOf / 2) === match.matchScores[index]) { // 赢得一场比赛
+              clock.cancel() // 停下时钟
+            } else {
+              dispatch('ADD_GAME_NUMBER')
+              dispatch('EXCHANGE_SIDES')
+              dispatch('RESET_GAME_SCORES')
+            }
+          }
         },
         exchangeSide: ({dispatch}) => dispatch('EXCHANGE_TEAMS')
       }
@@ -73,6 +101,12 @@
     },
     computed: {
       toolList () {
+        var match = this.$store.state.match
+        var bestOfCN = (b) => {
+          if (b === 1) return '一局一胜'
+          if (b === 3) return '三局两胜'
+          if (b === 5) return '五局三胜'
+        }
         return {
           clock: {
             title: '时钟',
@@ -84,11 +118,11 @@
           },
           bestOf: {
             title: '局数',
-            after: '三局两胜'
+            after: bestOfCN(match.matchSettings.bestOf)
           },
           scoringSys: {
             title: '得分制',
-            after: '21分制'
+            after: match.matchSettings.scoringSys + '分制'
           }
         }
       }
@@ -96,7 +130,7 @@
     },
     ready () {
       sortable.sortableToggle()
-      clock.init((cl) => {
+      clock.initClock((cl) => {
         this.clockTicking(cl, clock.duration)
       })
     }

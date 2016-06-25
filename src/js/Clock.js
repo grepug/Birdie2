@@ -4,7 +4,7 @@ class Clock {
     this.duration = 0
   }
 
-  init (cb) {
+  initClock (cb) {
     this.clock = setInterval(() => {
       var sec, min, hour
       this.duration = (Date.now() - this.then) / 1000
@@ -21,6 +21,19 @@ class Clock {
         return cb(hour + ':' + min + ':' + sec)
       }
     }, 1200)
+    return this
+  }
+
+  initTimer (secs, cb) {
+    this.timer = setInterval(() => {
+      secs--
+      cb(secs)
+      console.log(secs)
+      if (secs <= 0) {
+        clearInterval(this.timer)
+      }
+    }, 1200)
+    return this
   }
 
   cancel () {
@@ -29,4 +42,4 @@ class Clock {
   }
 }
 
-export default new Clock()
+export default Clock

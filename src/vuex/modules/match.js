@@ -3,8 +3,9 @@ const state = {
   umpire: [],
   discipline: null,
   matchSettings: {
-    scoringSys: 21,
-    bestOf: 3
+    scoringSys: 5,
+    bestOf: 3,
+    intervalScore: 2
   },
   roomId: null,
   matchRoomStates: {
@@ -16,16 +17,20 @@ const state = {
   matchState: 'preparing',
   matchClock: '00:00:00',
   matchDuration: 0,
-  // scores: {
-  //   '1': 0,
-  //   '2': 0
-  // },
   scores: {
     "0": 0,
     "1": 0
   },
   scoresFlow: [],
-  sideExchanged: false
+  sideExchanged: false,
+  matchGames: [],
+  matchScores: {
+    "0": 0,
+    "1": 0
+  },
+  gameNumber: 1,
+  isGameInterval: false,
+  gameIntervalTimer: 0
 }
 
 const mutations = {
@@ -59,15 +64,40 @@ const mutations = {
     state.matchClock = cl
     state.matchDuration = duration
   },
-  ['CHANGE_MATCH_SCORES'] (state, team) {
+  ['CHANGE_GAME_SCORES'] (state, team) {
     state.scores[team]++
     state.scoresFlow.push({
       scoredTeam: team,
       duration: state.matchDuration
     })
   },
-  ['EXCHANGE_TEAMS'] (state) {
+  ['RESET_GAME_SCORES'] (state) {
+    state.scores = {'0': 0, '1': 0}
+  },
+  ['EXCHANGE_SIDES'] (state) {
     state.sideExchanged = !state.sideExchanged
+  },
+  ['PUSH_MATCH_GAME'] (state, winnerIndex) {
+    state.matchGames.push({
+      scoresFlow: state.scoresFlow,
+      winner: winnerIndex,
+      duration: state.matchDuration
+    })
+    state.matchScores[winnerIndex]++
+    state.scoresFlow = []
+  },
+  ['ADD_GAME_NUMBER'] (state) {
+    state.gameNumber++
+  },
+  ['SET_GAME_INTERVAL'] (state) {
+    state.isGameInterval = true
+  },
+  ['SET_GAME_INTERVAL_TIMER'] (state, secs) {
+    state.gameIntervalTimer = secs
+  },
+  ['REMOVE_GAME_INTERVAL'] (state) {
+    state.isGameInterval = false
+    state.gameIntervalTimer = 0
   }
 }
 
