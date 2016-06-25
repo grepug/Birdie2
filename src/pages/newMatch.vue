@@ -28,7 +28,7 @@
   import toastView from '../components/toast'
   import invitePlayersView from '../components/invitePlayers'
   import {SelectCell, Button, Actionsheet} from 'vue-weui'
-  import $ from 'jquery'
+  import $ from '../js/MyQuery'
   import _ from 'underscore'
   import matchRoom from '../js/matchRoomWd'
   import sortable from '../js/sortable'
@@ -195,7 +195,7 @@
 
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
   .weui_select_after .weui_select {
     padding-left: 15px;
   }

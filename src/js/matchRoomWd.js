@@ -45,6 +45,7 @@ function join (_this, roomId) {
   _this.setRoomId(roomId)
   api.getInvitees(roomId)
   .then(ret => {
+    console.log(ret)
     if (!ret) return
     var invitees = _.map(ret, v => v)
     if (invitees.indexOf(userObjId) == -1) return

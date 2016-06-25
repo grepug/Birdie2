@@ -50,6 +50,7 @@
     "nightwatch": "^0.9.4",
     "ora": "*",
     "shelljs": "^0.7.0",
+    "sizzle": "^2.3.0",
     "underscore": "*",
     "vue": "*",
     "vue-hot-reload-api": "^1.3.3",

@@ -1,7 +1,8 @@
 import _ from 'underscore'
 
 const state = {
-  teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
+  // teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
+  teams: [],
   umpire: [],
   discipline: null,
   matchSettings: {
