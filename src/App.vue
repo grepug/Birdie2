@@ -43,7 +43,6 @@ import swiperView from './components/swiper'
 import 'font-awesome-webpack'
 import {Actionsheet} from 'vue-weui'
 
-console.log(Actionsheet)
 export default {
   components: {
     navbarView,

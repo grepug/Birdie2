@@ -5,7 +5,8 @@ const state = {
   matchSettings: {
     scoringSys: 5,
     bestOf: 3,
-    intervalScore: 2
+    intervalScore: 2,
+    gameIntervalDuration: 60
   },
   roomId: null,
   matchRoomStates: {
@@ -14,7 +15,7 @@ const state = {
     createdAt: null
   },
   matchReady: false,
-  matchState: 'preparing',
+  matchState: 'playing', // preparing, playing, completed
   matchClock: '00:00:00',
   matchDuration: 0,
   scores: {
@@ -81,7 +82,8 @@ const mutations = {
     state.matchGames.push({
       scoresFlow: state.scoresFlow,
       winner: winnerIndex,
-      duration: state.matchDuration
+      duration: state.matchDuration,
+      scores: state.scores
     })
     state.matchScores[winnerIndex]++
     state.scoresFlow = []

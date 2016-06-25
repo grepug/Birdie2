@@ -36,8 +36,8 @@ class Clock {
     return this
   }
 
-  cancel () {
-    clearInterval(this.clock)
+  cancel (inter) {
+    clearInterval(inter || this.clock)
     if (typeof cb === 'function') cb()
   }
 }

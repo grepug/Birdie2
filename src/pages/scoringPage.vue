@@ -10,6 +10,9 @@
     main
       versus-view(:teams="teams", :points="scores", @on-add-point="addScore")
       sortable-lists-view(:list="toolList")
+      dialog(v-show="isGameInterval", type="alert", title="中场间歇", confirm-button="取消间歇", @weui-dialog-confirm="removeGameInterval")
+        h4(style="text-align: center") 中场间歇还有{{gameIntervalTimer}}秒
+      dialog(v-show="matchCompleted", type="alert", title="比赛结束", confirm-button="查看结果", @weui-dialog-confirm="viewResult")
     toast-view
 
 </template>
@@ -21,6 +24,9 @@
     versusView,
     sortableListsView
   } from '../components'
+  import {
+    Dialog
+  } from 'vue-weui'
   import sortable from '../js/sortable'
   import Clock from '../js/Clock'
   import _ from 'underscore'
@@ -33,7 +39,8 @@
       navbarView,
       toastView,
       versusView,
-      sortableListsView
+      sortableListsView,
+      Dialog
     },
     vuex: {
       getters: {
@@ -42,6 +49,11 @@
           var s = JSON.parse(JSON.stringify(match.scores))
           if (match.sideExchanged) s = {'0': s['1'], '1': s['0']}
           return s
+        },
+        currentMatchScore: ({match}) => {
+          return match.matchGames.map(el => {
+            return _.map(el.scores, el2 => el2).join(':')
+          }).join(' ') + ' ' + _.map(match.scores, el => el).join(':')
         },
         teams: ({match, user}) => {
           var t = match.teams.map(el => el.map(id => {
@@ -52,32 +64,45 @@
           }))
           if (match.sideExchanged) t = t.reverse()
           return t
-        }
+        },
+        isGameInterval: ({match}) => match.isGameInterval,
+        gameIntervalTimer: ({match}) => {
+          var timeout = match.gameIntervalTimer
+          return timeout === 0 ? '' : timeout
+        },
+        matchCompleted: ({match}) => match.matchState === 'completed'
       },
       actions: {
         clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur),
         addScore: ({dispatch, state}, index) => {
           var match = state.match
+          if (match.matchState !== 'playing') return
+          if (match.isGameInterval) return
           if (match.sideExchanged) index = index === 0 ? 1 : 0
           dispatch('CHANGE_GAME_SCORES', index)
           var opponentIndex = index === 0 ? 1 : 0
           var currentScoredTeamScore = match.scores[index]
           var currentOpponentTeamScore = match.scores[opponentIndex]
           var diff = currentScoredTeamScore - currentOpponentTeamScore
-          console.log(currentScoredTeamScore)
-          console.log(currentOpponentTeamScore)
-          if (match.matchSettings.intervalScore && currentScoredTeamScore === match.matchSettings.intervalScore) {
-            dispatch('SET_GAME_INTERVAL')
-            timer.initTimer(10, (secs) => {
+          var willInterval = match.matchSettings.intervalScore && currentScoredTeamScore === match.matchSettings.intervalScore && currentScoredTeamScore > currentOpponentTeamScore
+          var willWinTheGame = diff >= 2 && currentScoredTeamScore >= match.matchSettings.scoringSys
+          console.log(match.matchScores[index])
+          console.log(Math.ceil(match.matchSettings.bestOf / 2))
+          if (willInterval) {
+            timer.initTimer(match.matchSettings.gameIntervalDuration, (secs) => {
               dispatch('SET_GAME_INTERVAL_TIMER', secs)
               if (secs <= 0) dispatch('REMOVE_GAME_INTERVAL')
             })
+            dispatch('SET_GAME_INTERVAL')
           }
-          if (diff >= 2 && currentScoredTeamScore >= match.matchSettings.scoringSys) { // 得分方赢得一局比赛
+          if (willWinTheGame) { // 得分方赢得一局比赛
             console.log('complete')
             dispatch('PUSH_MATCH_GAME', index)
-            if (Math.ceil(match.matchSettings.bestOf / 2) === match.matchScores[index]) { // 赢得一场比赛
+            var willWinTheMatch = willWinTheGame && (Math.ceil(match.matchSettings.bestOf / 2) === match.matchScores[index])
+            if (willWinTheMatch) { // 赢得一场比赛
+              console.log('match win')
               clock.cancel() // 停下时钟
+              dispatch('CHANGE_MATCH_STATE', 'completed')
             } else {
               dispatch('ADD_GAME_NUMBER')
               dispatch('EXCHANGE_SIDES')
@@ -85,18 +110,24 @@
             }
           }
         },
-        exchangeSide: ({dispatch}) => dispatch('EXCHANGE_TEAMS')
+        exchangeSide: ({dispatch}) => dispatch('EXCHANGE_TEAMS'),
+        removeGameInterval: ({dispatch}) => {
+          dispatch('REMOVE_GAME_INTERVAL')
+          timer.cancel(timer.timer)
+        }
       }
     },
     data () {
       return {
-
       }
     },
     methods: {
       exchange () {
         this.exchangeSide()
         window.vm = this
+      },
+      viewResult () {
+        this.$router.go()
       }
     },
     computed: {
@@ -108,6 +139,10 @@
           if (b === 5) return '五局三胜'
         }
         return {
+          scores: {
+            title: '得分',
+            after: this.currentMatchScore
+          },
           clock: {
             title: '时钟',
             after: this.matchClock
