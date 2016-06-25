@@ -6,9 +6,9 @@
           i.fa.fa-arrow-left
       .center 计分器
       .right
-        a.link(href="javascript:;") 更多
+        a.link(href="javascript:;", @click="exchange") 更多
     main
-      versus-view(:teams="teams", :points="points")
+      versus-view(:teams="teams", :points="scores", @on-add-point="addScore")
       sortable-lists-view(:list="toolList")
     toast-view
 
@@ -23,6 +23,7 @@
   } from '../components'
   import sortable from '../js/sortable'
   import clock from '../js/Clock'
+  import _ from 'underscore'
 
   export default {
     components: {
@@ -33,14 +34,41 @@
     },
     vuex: {
       getters: {
-        matchClock: ({match}) => match.matchClock
+        matchClock: ({match}) => match.matchClock,
+        scores: ({match}) => {
+          var s = JSON.parse(JSON.stringify(match.scores))
+          if (match.sideExchanged) s = {'0': s['1'], '1': s['0']}
+          return s
+        },
+        teams: ({match, user}) => {
+          var t = match.teams.map(el => el.map(id => {
+            if (id === user.userObj.id) {
+              return user.userObj.toJSON()
+            }
+            return _.findWhere(user.userObjs, {objectId: id})
+          }))
+          if (match.sideExchanged) t = t.reverse()
+          return t
+        }
       },
       actions: {
-        clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur)
+        clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur),
+        addScore: ({dispatch, state}, index) => {
+          if (state.match.sideExchanged) index = index === 0 ? 1 : 0
+          dispatch('CHANGE_MATCH_SCORES', index)
+        },
+        exchangeSide: ({dispatch}) => dispatch('EXCHANGE_TEAMS')
       }
     },
     data () {
       return {
+
+      }
+    },
+    methods: {
+      exchange () {
+        this.exchangeSide()
+        window.vm = this
       }
     },
     computed: {
@@ -63,42 +91,11 @@
             after: '21分制'
           }
         }
-      },
-      teams () {
-        return [
-          [
-            {
-              headimgurl: 'http://wx.qlogo.cn/mmopen/PiajxSqBRaEK3OiaEFu3GUzEJsVuBECq3Sl5GPXNBakIQ5yN6po3GP98n2osawuw7SCeQibwJwSB4lU99kssS8gSQ/0',
-              sex: 1,
-              nickname: 'sk'
-            },
-            {
-              headimgurl: 'http://wx.qlogo.cn/mmopen/PiajxSqBRaEK3OiaEFu3GUzEJsVuBECq3Sl5GPXNBakIQ5yN6po3GP98n2osawuw7SCeQibwJwSB4lU99kssS8gSQ/0',
-              sex: 1,
-              nickname: 'sk'
-            }
-          ],
-          [
-            {
-              headimgurl: 'http://wx.qlogo.cn/mmopen/PiajxSqBRaEK3OiaEFu3GUzEJsVuBECq3Sl5GPXNBakIQ5yN6po3GP98n2osawuw7SCeQibwJwSB4lU99kssS8gSQ/0',
-              sex: 1,
-              nickname: 'sk'
-            },
-            {
-              headimgurl: 'http://wx.qlogo.cn/mmopen/PiajxSqBRaEK3OiaEFu3GUzEJsVuBECq3Sl5GPXNBakIQ5yN6po3GP98n2osawuw7SCeQibwJwSB4lU99kssS8gSQ/0',
-              sex: 2,
-              nickname: 'sk'
-            }
-          ]
-        ]
-      },
-      points () {
-        return [11, 12]
       }
+
     },
     ready () {
       sortable.sortableToggle()
-      // clock.init(this.clockTicking)
       clock.init((cl) => {
         this.clockTicking(cl, clock.duration)
       })

@@ -28,7 +28,6 @@
         default: []
       },
       points: {
-        type: Array,
         default: []
       }
     },

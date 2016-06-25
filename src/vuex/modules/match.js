@@ -1,5 +1,5 @@
 const state = {
-  teams: [],
+  teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
   umpire: [],
   discipline: null,
   matchSettings: {
@@ -16,7 +16,16 @@ const state = {
   matchState: 'preparing',
   matchClock: '00:00:00',
   matchDuration: 0,
-  scores: []
+  // scores: {
+  //   '1': 0,
+  //   '2': 0
+  // },
+  scores: {
+    "0": 0,
+    "1": 0
+  },
+  scoresFlow: [],
+  sideExchanged: false
 }
 
 const mutations = {
@@ -49,6 +58,16 @@ const mutations = {
   ['CHANGE_MATCH_DURATION'] (state, cl, duration) {
     state.matchClock = cl
     state.matchDuration = duration
+  },
+  ['CHANGE_MATCH_SCORES'] (state, team) {
+    state.scores[team]++
+    state.scoresFlow.push({
+      scoredTeam: team,
+      duration: state.matchDuration
+    })
+  },
+  ['EXCHANGE_TEAMS'] (state) {
+    state.sideExchanged = !state.sideExchanged
   }
 }
 
