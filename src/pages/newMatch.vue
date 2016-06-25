@@ -59,7 +59,6 @@
           return !!match.matchReady
         },
         sortableListSorted: ({ui}) => ui.sortableListSorted
-        // matchRoomMembers: ({match} => match.matchRoomStates.members)
       },
       actions: {
         changeTeams,
@@ -178,33 +177,6 @@
         })
       }
     }
-    // ready () {
-    //   var cid = this.$route.query.cid
-    //   if (cid) {
-    //     matchRoom.join(cid, this)
-    //   } else {
-    //     matchRoom.create(this).then((ret) => {
-    //       console.log(ret)
-    //       this.toastText = '创建成功'
-    //       this.addMember(this.userObj.id)
-    //       sortable.sortableToggle('.sortable')
-    //       this.onSort()
-    //       this.cid = ret.id
-    //       this.$watch('matchSettings', function (x, y) {
-    //         console.log(x)
-    //         this.changeMatchSettings(x)
-    //         matchRoom.sendOrder(null, {
-    //           numberOfGames: x.numberOfGames,
-    //           scoringSys: x.scoringSys
-    //         })
-    //       }, {
-    //         deep: true
-    //       })
-    //     })
-    //     this.isHost = true
-    //   }
-    //   this.onSort()
-    // }
   }
 
   function getOrder () {
@@ -212,7 +184,6 @@
     $('.sortable li').map(function (index, el) {
       arr.push($(el).data('id'))
     })
-    console.log(arr)
     return arr
   }
 

@@ -1,7 +1,7 @@
 <template lang="jade">
   .list-block.sortable
     ul
-      li(v-for="(index, el) in list", :class="{'team2-first': (list.length / 2) === index}", :data-id="el.id", @click="onLiPress(index)")
+      li(v-for="(index, el) in list", :data-id="el.id", v-touch:press="onLiPress(index)")
         .item-content
           .item-media(v-if="el.img")
             img(:src="el.img")
@@ -31,7 +31,6 @@
     },
     ready () {
       sortable.initSortable()
-      // sortable.sortableToggle('.sortable')
       $('.sortable').on('sort', () => {
         this.$dispatch('on-sort', null)
       })

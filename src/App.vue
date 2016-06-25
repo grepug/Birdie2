@@ -76,6 +76,9 @@ export default {
 </script>
 
 <style lang="less">
+  * {
+    user-select: none;
+  }
   .navbar {
   }
   .swiper-container {
