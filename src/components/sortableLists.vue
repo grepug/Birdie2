@@ -18,8 +18,7 @@
   export default {
     props: {
       list: {
-        require: true,
-        type: Array
+        require: true
       }
     },
     vuex: {

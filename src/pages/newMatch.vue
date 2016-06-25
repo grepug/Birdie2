@@ -195,7 +195,7 @@
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .weui_select_after .weui_select {
     padding-left: 15px;
   }
