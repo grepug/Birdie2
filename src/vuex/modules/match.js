@@ -14,6 +14,8 @@ const state = {
   },
   matchReady: false,
   matchState: 'preparing',
+  matchClock: '00:00:00',
+  matchDuration: 0,
   scores: []
 }
 
@@ -43,6 +45,10 @@ const mutations = {
   },
   ['ADD_MATCHROOM_INVITEES'] (state, invitees) {
     state.matchRoomStates.invitees = state.matchRoomStates.invitees.concat(invitees)
+  },
+  ['CHANGE_MATCH_DURATION'] (state, cl, duration) {
+    state.matchClock = cl
+    state.matchDuration = duration
   }
 }
 

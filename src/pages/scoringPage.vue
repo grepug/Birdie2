@@ -22,6 +22,7 @@
     sortableListsView
   } from '../components'
   import sortable from '../js/sortable'
+  import clock from '../js/Clock'
 
   export default {
     components: {
@@ -32,18 +33,22 @@
     },
     vuex: {
       getters: {
-
+        matchClock: ({match}) => match.matchClock
       },
       actions: {
-
+        clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur)
       }
     },
     data () {
       return {
-        toolList: {
+      }
+    },
+    computed: {
+      toolList () {
+        return {
           clock: {
             title: '时钟',
-            after: 'abc'
+            after: this.matchClock
           },
           discipline: {
             title: '比赛项目',
@@ -58,9 +63,7 @@
             after: '21分制'
           }
         }
-      }
-    },
-    computed: {
+      },
       teams () {
         return [
           [
@@ -95,6 +98,10 @@
     },
     ready () {
       sortable.sortableToggle()
+      // clock.init(this.clockTicking)
+      clock.init((cl) => {
+        this.clockTicking(cl, clock.duration)
+      })
     }
   }
 </script>

@@ -7,7 +7,7 @@ class Clock {
   init (cb) {
     this.clock = setInterval(() => {
       var sec, min, hour
-      this.duration = (Date().now() - this.then) / 1000
+      this.duration = (Date.now() - this.then) / 1000
       if (this.duration < 60) return cb('00:00:' + ('0' + Math.floor(this.duration)).slice(-2))
       if (this.duration / 60 < 60) {
         sec = ('0' + Math.floor(this.duration % 60)).slice(-2)
@@ -20,7 +20,7 @@ class Clock {
         hour = ('0' + '0' + Math.floor(this.duration / 60 / 60)).slice(-2)
         return cb(hour + ':' + min + ':' + sec)
       }
-    }, 1000)
+    }, 1200)
   }
 
   cancel () {

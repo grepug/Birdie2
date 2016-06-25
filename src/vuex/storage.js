@@ -2,11 +2,11 @@ import _ from 'underscore'
 
 const storage = {
   onInit (state, store) {
-    console.log(state)
+    // console.log(state)
 
   },
   onMutation (mutation, state, store) {
-    console.log(mutation)
+    // console.log(mutation)
     localStorage.setItem('vuex_state', JSON.stringify(state))
     switch (mutation.type) {
       case 'USERLOGED':
