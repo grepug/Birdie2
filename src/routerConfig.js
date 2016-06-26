@@ -4,19 +4,19 @@ import store from './vuex/store'
 export default function (router) {
   router.map({
     '/': {
-      component: require('./App')
+      component: view('./App')
     },
     '/login': {
-      component: require('./pages/login')
+      component: view('./pages/login')
     },
     '/newMatch': {
-      component: require('./pages/newMatch')
+      component: view('./pages/newMatch')
     },
     '/scoringPage': {
-      component: require('./pages/scoringPage')
+      component: view('./pages/scoringPage')
     },
     '/friends': {
-      component: require('./pages/Friends')
+      component: view('./pages/friends')
     }
   })
 
@@ -27,7 +27,7 @@ export default function (router) {
       }
     } else {
       store.dispatch('USERLOGED')
-      store.dispatch('SET_USEROBJ', AV.User.current())
+      store.dispatch('SET_USEROBJ', AV.User.current().toJSON())
       if (transition.to.path === '/login') {
         transition.redirect('/')
       }
@@ -41,4 +41,10 @@ export default function (router) {
 
     transition.next()
   })
+}
+
+function view(path) {
+  return function(resolve) {
+    require([path], resolve);
+  }
 }
