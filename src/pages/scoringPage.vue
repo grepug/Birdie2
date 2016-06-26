@@ -2,13 +2,12 @@
   div
     navbar-view
       .left
-        a.link(href="javascript:;")
-          i.fa.fa-arrow-left
+        a.link(href="javascript:;") 第{{gameNumber}}局
       .center 计分器
       .right
         a.link(href="javascript:;", @click="exchange") 更多
     main
-      versus-view(:teams="teams", :points="scores", @on-add-point="addScore")
+      versus-view(:teams="teams", :points="scores", :scored-team="lastScoredTeamIndex", :side-exchanged="sideExchanged", @on-add-point="addScore")
       sortable-lists-view(:list="toolList")
       .buttons
         a.button(href="javascript:;", @click="undo") 撤销
@@ -37,6 +36,7 @@
   import sortable from '../js/sortable'
   import Clock from '../js/Clock'
   import _ from 'underscore'
+  import snapshot from '../js/matchSnapshot'
 
   const timer = new Clock()
   const clock = new Clock()
@@ -78,7 +78,10 @@
           var timeout = match.gameIntervalTimer
           return timeout === 0 ? '' : timeout
         },
-        matchCompleted: ({match}) => match.matchState === 'completed'
+        matchCompleted: ({match}) => match.matchState === 'completed',
+        gameNumber: ({match}) => match.gameNumber,
+        lastScoredTeamIndex: ({match}) => match.lastScoredTeamIndex,
+        sideExchanged: ({match}) => match.sideExchanged
       },
       actions: {
         clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur),
@@ -122,8 +125,7 @@
         removeGameInterval: ({dispatch}) => {
           dispatch('REMOVE_GAME_INTERVAL')
           timer.cancel(timer.timer)
-        },
-        undoAction: ({dispatch}) => dispatch('UNDO_LAST_SCORE')
+        }
       }
     },
     data () {
@@ -136,20 +138,7 @@
     },
     methods: {
       exchange () {
-        var scoresFlow = JSON.parse(window.localStorage.getItem('scoresFlow'))
-        var undo = scoresFlow[scoresFlow.length - 2]
-        console.log(undo)
-        _.extend(this.$store.state.match, {
-          scores: undo.scores,
-          gameNumber: undo.gameNumber,
-          lastLastScoredTeam: undo.lastLastScoredTeam,
-          matchGames: undo.matchGames,
-          matchScores: undo.matchScores,
-          sideExchanged: undo.sideExchanged,
-          scoresFlow: undo.scoresFlow
-        })
-        console.log(undo)
-        console.log(this.$store.state.match)
+        snapshot.revert(this.$store.state.match)
       },
       viewResult () {
         this.$router.go()
@@ -183,7 +172,7 @@
       confirm () {
         switch (this.confirmDialogState) {
           case 'undo':
-            this.undoAction()
+            snapshot.revert(this.$store.state.match)
             break
           case 'pause':
             break
@@ -227,9 +216,11 @@
     },
     ready () {
       sortable.sortableToggle()
+      snapshot.save(this.$store.state)
       // clock.initClock((cl) => {
       //   this.clockTicking(cl, clock.duration)
       // })
+      window.vm = this
     }
   }
 </script>

@@ -1,22 +1,22 @@
 import _ from 'underscore'
 
 const state = {
-  teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
-  // teams: [],
-  umpire: [],
-  discipline: null,
-  matchSettings: {
-    scoringSys: 5,
-    bestOf: 3,
-    intervalScore: 2,
-    gameIntervalDuration: 60
-  },
-  matchRoomStates: {
-    roomId: null,
-    invitees: [],
-    createdAt: null
-  },
-  matchReady: false,
+  // teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
+  // // teams: [],
+  // umpire: [],
+  // discipline: null,
+  // matchSettings: {
+  //   scoringSys: 5,
+  //   bestOf: 3,
+  //   intervalScore: 2,
+  //   gameIntervalDuration: 60
+  // },
+  // matchRoomStates: {
+  //   roomId: null,
+  //   invitees: [],
+  //   createdAt: null
+  // },
+  // matchReady: false,
   matchState: 'playing', // preparing, playing, completed
   matchClock: '00:00:00',
   matchDuration: 0,

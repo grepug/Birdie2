@@ -7,7 +7,7 @@
         .name(v-text="name1")
         .point(v-text="points[0]")
         .button
-          a.button(href="javascript:;", @click="addPoint(0)") +
+          a.button(href="javascript:;", @click="addPoint(0)", :class="{active: buttonActive === 0}") +
       .divider
         .vs VS.
         div :
@@ -17,7 +17,7 @@
         .name(v-text="name2")
         .point(v-text="points[1]")
         .button
-          a.button(href="javascript:;", @click="addPoint(1)") +
+          a.button(href="javascript:;", @click="addPoint(1)", :class="{active: buttonActive === 1}") +
 </template>
 
 <script>
@@ -29,6 +29,12 @@
       },
       points: {
         default: []
+      },
+      scoredTeam: {
+        type: Number
+      },
+      sideExchanged: {
+        type: Boolean
       }
     },
     computed: {
@@ -41,6 +47,11 @@
         return this.teams[1].map(el => {
           return el.nickname
         }).join(' / ')
+      },
+      buttonActive () {
+        var index = this.scoredTeam
+        if (this.sideExchanged) index = index === 0 ? 1 : 0
+        return index
       }
     },
     methods: {
@@ -98,6 +109,9 @@
           padding-top: 0.3rem;
           padding-bottom: 0.3rem;
           margin: 0 auto;
+        }
+        a.active {
+          background-color: red;
         }
       }
     }

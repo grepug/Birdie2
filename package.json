@@ -45,6 +45,7 @@
     "leancloud-realtime": "*",
     "leancloud-storage": "*",
     "leanengine": "*",
+    "localforage": "^1.4.2",
     "lolex": "*",
     "mint-ui": "*",
     "mocha": "*",

@@ -32,7 +32,7 @@
           div
             a(v-link="{path: '/friends'}") 附近球友
           div
-            a(href="javascript:;") 啦啦啦
+            a(v-link="{path: '/scoringPage'}") 计分器
           div
             a(v-link="{path: '/user'}") 用户中心
 </template>

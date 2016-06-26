@@ -1,20 +1,23 @@
 import _ from 'underscore'
-import imm from 'immutable'
+import localforage from 'localforage'
+import snapshot from '../js/matchSnapshot'
 
 const storage = {
   onInit (state, store) {
-    // console.log(state)
-    localStorage.removeItem('scoresFlow')
-
+    snapshot.reset()
   },
   onMutation (mutation, state, store) {
 
     if (mutation.type === 'CHANGE_GAME_SCORES') {
-      var raw = localStorage.getItem('scoresFlow')
-      var scoresFlow = raw ? JSON.parse(raw) : []
-      scoresFlow.push(state.match)
-      localStorage.setItem('scoresFlow', JSON.stringify(scoresFlow))
-      console.log(scoresFlow)
+      // var raw = localStorage.getItem('scoresFlow')
+      // var scoresFlow = raw ? JSON.parse(raw) : []
+      // scoresFlow.push(state.match)
+      // localStorage.setItem('scoresFlow', JSON.stringify(scoresFlow))
+      // console.log(scoresFlow)
+      snapshot.save(state)
+      .then(ret => {
+        console.log(ret)
+      })
     }
 
   }
