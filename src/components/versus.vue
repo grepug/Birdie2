@@ -7,7 +7,7 @@
         .name(v-text="name1")
         .point(v-text="points[0]")
         .button
-          a.button(href="javascript:;", @click="addPoint(0)", :class="{active: buttonActive === 0}") +
+          a.button(href="javascript:;", @click="addPoint(0)", :class="{active: buttonActive === 0, disabled: buttonDisabled}") +
       .divider
         .vs VS.
         div :
@@ -17,7 +17,7 @@
         .name(v-text="name2")
         .point(v-text="points[1]")
         .button
-          a.button(href="javascript:;", @click="addPoint(1)", :class="{active: buttonActive === 1}") +
+          a.button(href="javascript:;", @click="addPoint(1)", :class="{active: buttonActive === 1, disabled: buttonDisabled}") +
 </template>
 
 <script>
@@ -35,6 +35,11 @@
       },
       sideExchanged: {
         type: Boolean
+      }
+    },
+    data () {
+      return {
+        buttonDisabled: false
       }
     },
     computed: {
@@ -56,7 +61,12 @@
     },
     methods: {
       addPoint (index) {
+        if (this.buttonDisabled) return
+        this.buttonDisabled = true
         this.$dispatch('on-add-point', index)
+        window.setTimeout(() => {
+          this.buttonDisabled = false
+        }, 100)
       }
     }
   }
@@ -112,6 +122,12 @@
         }
         a.active {
           background-color: red;
+        }
+        a.disabled {
+          background-color: #eee;
+        }
+        a.disabled.active {
+          background-color: lighten(red, 20%);
         }
       }
     }
