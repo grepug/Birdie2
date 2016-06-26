@@ -55,11 +55,11 @@
         members: getMembers,
         currentMatchSettings,
         othersUserObj: getOthersUserObj,
-        isMatchReady ({match}) {
-          return !!match.matchReady
+        isMatchReady ({court}) {
+          return !!court.matchReady
         },
         sortableListSorted: ({ui}) => ui.sortableListSorted,
-        isUmpire: ({match, user}) => match.umpire.indexOf(user.userObj.id) !== -1
+        isUmpire: ({court, user}) => court.umpire.indexOf(user.userObj.id) !== -1
       },
       actions: {
         changeTeams,

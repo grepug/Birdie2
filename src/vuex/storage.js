@@ -1,4 +1,5 @@
 import _ from 'underscore'
+import imm from 'immutable'
 
 const storage = {
   onInit (state, store) {

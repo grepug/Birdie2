@@ -9,12 +9,16 @@ export const getUserObj = state => {
 // }
 
 export const currentTeams = state => {
-  console.log(state.match.teams)
-  return state.match.teams
+  return state.court.teams
 }
 
-export const currentMatchSettings = state => {
-  return state.match.matchSettings
+export const currentMatchSettings = ({court}) => {
+  return {
+    scoringSys: court.scoringSys,
+    bestOf: court.bestOf,
+    intervalScore: court.intervalScore,
+    gameIntervalDuration: court.gameIntervalDuration
+  }
 }
 
 export const getOthersUserObj = state => {
@@ -22,5 +26,5 @@ export const getOthersUserObj = state => {
 }
 
 export const getMembers = state => {
-  return _.flatten(state.match.teams.concat(state.match.umpire))
+  return _.flatten(state.court.teams.concat(state.court.umpire))
 }

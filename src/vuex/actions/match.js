@@ -3,13 +3,14 @@ import api from '../../js/wilddogApi'
 import _ from 'underscore'
 
 export const create = ({dispatch, state}) => {
+  var {court} = state
   return AV.Cloud.run('match', {
     method: 'create',
-    teams: state.match.teams,
-    umpire: state.match.umpire,
-    discipline: state.match.discipline,
-    scoringSys: state.match.matchSettings.scoringSys,
-    bestOf: state.match.matchSettings.bestOf
+    teams: court.teams,
+    umpire: court.umpire,
+    discipline: court.discipline,
+    scoringSys: court.scoringSys,
+    bestOf: court.bestOf
   }).then(ret => {
     dispatch('CHANGE_MATCH_STATE', 'playing')
   })
@@ -54,7 +55,7 @@ export const changeMatchSettings = ({dispatch}, matchSettings) => {
 export const addMatchRoomInvitees = ({dispatch, state}, invitees) => {
   invitees = _.isArray(invitees) ? invitees : [invitees]
   var unAddedMembers = invitees.map(el => {
-    var r = state.match.matchRoomStates.invitees.indexOf(el) === -1
+    var r = state.court.invitees.indexOf(el) === -1
     if (r) {
       return el
     }
@@ -64,15 +65,15 @@ export const addMatchRoomInvitees = ({dispatch, state}, invitees) => {
 }
 
 export const createMatch = ({dispatch, state}) => {
-  var {match, user} = state
+  var {court, user} = state
   return AV.Cloud.run('match', {
     method: 'create',
-    teams: match.teams,
-    umpire: match.umpire,
-    scoringSys: match.matchSettings.scoringSys,
-    discipline: match.discipline,
-    bestOf: match.matchSettings.bestOf
+    teams: court.teams,
+    umpire: court.umpire,
+    discipline: court.discipline,
+    scoringSys: court.scoringSys,
+    bestOf: court.bestOf
   }).then(ret => {
-    return api.setMatchState(match.matchRoomStates.roomId, 'playing')
+    return api.setMatchState(court.roomId, 'playing')
   })
 }

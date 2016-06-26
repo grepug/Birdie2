@@ -62,8 +62,8 @@
             return _.map(el.scores, el2 => el2).join(':')
           }).join(' ') + ' ' + _.map(match.scores, el => el).join(':')
         },
-        teams: ({match, user}) => {
-          var t = match.teams.map(el => el.map(id => {
+        teams: ({court, match, user}) => {
+          var t = court.teams.map(el => el.map(id => {
             if (id === user.userObj.objectId) {
               return user.userObj
             }
@@ -83,7 +83,7 @@
       actions: {
         clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur),
         addScore ({dispatch, state}, index) {
-          var match = state.match
+          var {match, court} = state
           if (match.matchState !== 'playing') return
           if (match.isGameInterval) return
           if (match.sideExchanged) index = index === 0 ? 1 : 0
@@ -92,12 +92,12 @@
           var currentScoredTeamScore = match.scores[index]
           var currentOpponentTeamScore = match.scores[opponentIndex]
           var diff = currentScoredTeamScore - currentOpponentTeamScore
-          var willInterval = match.matchSettings.intervalScore && currentScoredTeamScore === match.matchSettings.intervalScore && currentScoredTeamScore > currentOpponentTeamScore
-          var willWinTheGame = diff >= 2 && currentScoredTeamScore >= match.matchSettings.scoringSys
+          var willInterval = court.intervalScore && currentScoredTeamScore === court.intervalScore && currentScoredTeamScore > currentOpponentTeamScore
+          var willWinTheGame = diff >= 2 && currentScoredTeamScore >= court.scoringSys
           console.log(match.matchScores[index])
-          console.log(Math.ceil(match.matchSettings.bestOf / 2))
+          console.log(Math.ceil(court.bestOf / 2))
           if (willInterval) {
-            timer.initTimer(match.matchSettings.gameIntervalDuration, (secs) => {
+            timer.initTimer(court.gameIntervalDuration, (secs) => {
               dispatch('SET_GAME_INTERVAL_TIMER', secs)
               if (secs <= 0) dispatch('REMOVE_GAME_INTERVAL')
             })
@@ -105,7 +105,7 @@
           }
           if (willWinTheGame) { // 得分方赢得一局比赛
             console.log('complete')
-            var willWinTheMatch = willWinTheGame && (Math.ceil(match.matchSettings.bestOf / 2) === match.matchScores[index] + 1)
+            var willWinTheMatch = willWinTheGame && (Math.ceil(court.bestOf / 2) === match.matchScores[index] + 1)
             if (willWinTheMatch) { // 赢得一场比赛
               console.log('match win')
               dispatch('CHANGE_MATCH_STATE', 'completed')
@@ -194,7 +194,7 @@
     },
     computed: {
       toolList () {
-        var match = this.$store.state.match
+        var {court} = this.$store.state
         var bestOfCN = (b) => {
           if (b === 1) return '一局一胜'
           if (b === 3) return '三局两胜'
@@ -215,11 +215,11 @@
           },
           bestOf: {
             title: '局数',
-            after: bestOfCN(match.matchSettings.bestOf)
+            after: bestOfCN(court.bestOf)
           },
           scoringSys: {
             title: '得分制',
-            after: match.matchSettings.scoringSys + '分制'
+            after: court.scoringSys + '分制'
           }
         }
       }
