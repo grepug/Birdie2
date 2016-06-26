@@ -3,7 +3,7 @@ const state = {
   // teams: [],
   umpire: [],
   discipline: null,
-  scoringSys: 11,
+  scoringSys: 5,
   bestOf: 3,
   intervalScore: 2,
   gameIntervalDuration: 60,

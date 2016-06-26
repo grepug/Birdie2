@@ -59,9 +59,11 @@
           return s
         },
         currentMatchScore: ({match}) => {
-          return match.matchGames.map(el => {
+          var ret = match.matchGames.map(el => {
             return _.map(el.scores, el2 => el2).join(':')
-          }).join(' ') + ' ' + _.map(match.scores, el => el).join(':')
+          }).join(' ')
+          if (match.matchState === 'playing') ret += ' ' + _.map(match.scores, el => el).join(':')
+          return ret
         },
         teams: ({court, match, user}) => {
           var t = court.teams.map(el => el.map(id => {
@@ -80,9 +82,9 @@
           return t
         },
         isGameInterval: ({match}) => match.isGameInterval,
-        gameIntervalTimer: ({match}) => {
+        gameIntervalTimer: ({match, court}) => {
           var timeout = match.gameIntervalTimer
-          return timeout === 0 ? '' : timeout
+          return timeout === 0 ? court.gameIntervalDuration : timeout
         },
         matchCompleted: ({match}) => match.matchState === 'completed',
         gameNumber: ({match}) => match.gameNumber,
@@ -224,9 +226,9 @@
     ready () {
       sortable.sortableToggle()
       snapshot.save(this.$store.state)
-      // clock.initClock((cl) => {
-      //   this.clockTicking(cl, clock.duration)
-      // })
+      clock.initClock((cl) => {
+        this.clockTicking(cl, clock.duration)
+      })
       this.addOthersUserObj(_.flatten(this.$store.state.court.teams.concat(this.$store.state.court.umpire)))
       window.vm = this
     }
