@@ -1,4 +1,5 @@
 import AV from '../../js/AV'
+import api from '../../js/wilddogApi'
 import _ from 'underscore'
 
 export const create = ({dispatch, state}) => {
@@ -60,4 +61,18 @@ export const addMatchRoomInvitees = ({dispatch, state}, invitees) => {
     return null
   }).filter(x => x)
   dispatch('ADD_MATCHROOM_INVITEES', unAddedMembers)
+}
+
+export const createMatch = ({dispatch, state}) => {
+  var {match, user} = state
+  return AV.Cloud.run('match', {
+    method: 'create',
+    teams: match.teams,
+    umpire: match.umpire,
+    scoringSys: match.matchSettings.scoringSys,
+    discipline: match.discipline,
+    bestOf: match.matchSettings.bestOf
+  }).then(ret => {
+    return api.setMatchState(match.matchRoomStates.roomId, 'playing')
+  })
 }

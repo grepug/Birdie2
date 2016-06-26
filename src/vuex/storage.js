@@ -3,39 +3,17 @@ import _ from 'underscore'
 const storage = {
   onInit (state, store) {
     // console.log(state)
+    localStorage.removeItem('scoresFlow')
 
   },
   onMutation (mutation, state, store) {
-    // console.log(mutation)
-    localStorage.setItem('vuex_state', JSON.stringify(state))
-    switch (mutation.type) {
-      case 'USERLOGED':
-        console.log('USERLOGED')
-        break
-      case 'ADD_OTHER_USEROBJS':
 
-        break
-      case 'CHANGE_GENERAL_STATE':
-        switch (mutation.payload[0]) {
-          case 'normal':
-
-            break
-          case 'matchPreparingHost':
-
-            break
-          case 'matchPreparingNonHost':
-
-            break
-          case 'playing':
-
-            break
-          case 'umpiring':
-
-            break
-        }
-        break
-      default:
-
+    if (mutation.type === 'CHANGE_GAME_SCORES') {
+      var raw = localStorage.getItem('scoresFlow')
+      var scoresFlow = raw ? JSON.parse(raw) : []
+      scoresFlow.push(state.match)
+      localStorage.setItem('scoresFlow', JSON.stringify(scoresFlow))
+      console.log(scoresFlow)
     }
 
   }

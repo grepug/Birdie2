@@ -12,13 +12,14 @@
       sortable-lists-view(:list="toolList")
       .buttons
         a.button(href="javascript:;", @click="undo") 撤销
-        a.button(href="javascript:;", @click="withdrawl") 退赛
         a.button(href="javascript:;", @click="pause") 暂停
-      dialog(v-show="isGameInterval", type="alert", title="中场间歇", confirm-button="取消间歇", @weui-dialog-confirm="removeGameInterval")
+        a.button(href="javascript:;", @click="matchComplete", v-show="matchCompleted") 完成
+      dialog(v-if="isGameInterval", type="alert", title="中场间歇", confirm-button="取消间歇", @weui-dialog-confirm="removeGameInterval")
         h4(style="text-align: center") 中场间歇还有{{gameIntervalTimer}}秒
-      dialog(v-show="matchCompleted", type="alert", title="比赛结束", confirm-button="查看结果", @weui-dialog-confirm="viewResult")
-      dialog(v-show="confirmDialogShow", type="confirm", title="提示", confirm-button="确定", @weui-dialog-confirm="confirm", @weui-dialog-cancel="confirmDialogShow = false")
+      //- dialog(v-if="matchCompleted", type="alert", title="比赛结束", confirm-button="查看结果", @weui-dialog-confirm="viewResult")
+      dialog(v-if="confirmDialogShow", type="confirm", title="提示", confirm-button="确定", @weui-dialog-confirm="confirm", @weui-dialog-cancel="confirmDialogShow = false")
         p(v-text="confirmDialogText")
+      dialog(v-if="gameUndoDialogShow", type="confirm", title="提示", confirm-button="确定", cancel-button="撤销", @weui-dialog-confirm="noUndo", @weui-dialog-cancel="doUndo")
     toast-view
 
 </template>
@@ -63,12 +64,13 @@
         },
         teams: ({match, user}) => {
           var t = match.teams.map(el => el.map(id => {
-            if (id === user.userObj.id) {
-              return user.userObj.toJSON()
+            if (id === user.userObj.objectId) {
+              return user.userObj
             }
             return _.findWhere(user.userObjs, {objectId: id})
           }))
           if (match.sideExchanged) t = t.reverse()
+          console.log(t)
           return t
         },
         isGameInterval: ({match}) => match.isGameInterval,
@@ -80,7 +82,7 @@
       },
       actions: {
         clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur),
-        addScore: ({dispatch, state}, index) => {
+        addScore ({dispatch, state}, index) {
           var match = state.match
           if (match.matchState !== 'playing') return
           if (match.isGameInterval) return
@@ -103,17 +105,13 @@
           }
           if (willWinTheGame) { // 得分方赢得一局比赛
             console.log('complete')
-            dispatch('PUSH_MATCH_GAME', index)
-            var willWinTheMatch = willWinTheGame && (Math.ceil(match.matchSettings.bestOf / 2) === match.matchScores[index])
+            var willWinTheMatch = willWinTheGame && (Math.ceil(match.matchSettings.bestOf / 2) === match.matchScores[index] + 1)
             if (willWinTheMatch) { // 赢得一场比赛
               console.log('match win')
-              if (window.confirm('完成比赛？还是撤销上一分')) {
-                clock.cancel() // 停下时钟
-                dispatch('CHANGE_MATCH_STATE', 'completed')
-              } else {
-                dispatch('UNDO_LAST_SCORE', index)
-              }
+              dispatch('CHANGE_MATCH_STATE', 'completed')
+              dispatch('PUSH_MATCH_GAME', index)
             } else {
+              dispatch('PUSH_MATCH_GAME', index)
               dispatch('ADD_GAME_NUMBER')
               dispatch('EXCHANGE_SIDES')
               dispatch('RESET_GAME_SCORES')
@@ -132,24 +130,49 @@
       return {
         confirmDialogShow: false,
         confirmDialogText: '',
-        confirmDialogState: null
+        confirmDialogState: null,
+        gameUndoDialogShow: false
       }
     },
     methods: {
       exchange () {
-        this.exchangeSide()
-        window.vm = this
+        var scoresFlow = JSON.parse(window.localStorage.getItem('scoresFlow'))
+        var undo = scoresFlow[scoresFlow.length - 2]
+        console.log(undo)
+        _.extend(this.$store.state.match, {
+          scores: undo.scores,
+          gameNumber: undo.gameNumber,
+          lastLastScoredTeam: undo.lastLastScoredTeam,
+          matchGames: undo.matchGames,
+          matchScores: undo.matchScores,
+          sideExchanged: undo.sideExchanged,
+          scoresFlow: undo.scoresFlow
+        })
+        console.log(undo)
+        console.log(this.$store.state.match)
       },
       viewResult () {
         this.$router.go()
       },
       undo () {
         var match = this.$store.state.match
-        if (match.matchState !== 'playing') return
-        if (!match.scoresFlow.length) return
+        if (match.matchState === 'preparing') return
+        if (!match.scoresFlow.length && !match.matchGames.length) return
         this.confirmDialogText = '确定撤销上一分？'
         this.confirmDialogState = 'undo'
         this.confirmDialogShow = true
+      },
+      matchComplete () {
+        clock.cancel()
+      },
+      undoBetweenGames (cb, cb1) {
+
+      },
+      doUndo () {
+
+      },
+      noUndo () {
+
       },
       withdrawl () {
         return
@@ -204,9 +227,9 @@
     },
     ready () {
       sortable.sortableToggle()
-      clock.initClock((cl) => {
-        this.clockTicking(cl, clock.duration)
-      })
+      // clock.initClock((cl) => {
+      //   this.clockTicking(cl, clock.duration)
+      // })
     }
   }
 </script>

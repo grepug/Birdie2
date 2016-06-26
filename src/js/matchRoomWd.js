@@ -9,9 +9,9 @@ var matchRoomIdRef
 function create (_this) {
   window.vm = _this
   var room = matchRoomRef.push({
-    members: [_this.userObj.id],
+    members: [_this.userObj.objectId],
     invitees: [],
-    host: _this.userObj.id,
+    host: _this.userObj.objectId,
     state: 'preparing',
     matchSettings: {
       scoringSys: null,
@@ -41,7 +41,7 @@ function create (_this) {
 }
 
 function join (_this, roomId) {
-  var userObjId = _this.userObj.id
+  var userObjId = _this.userObj.objectId
   _this.setRoomId(roomId)
   api.getInvitees(roomId)
   .then(ret => {

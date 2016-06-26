@@ -1,8 +1,8 @@
 import _ from 'underscore'
 
 const state = {
-  // teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
-  teams: [],
+  teams: [['575251faa341310063bf7e22'],['575d79e2df0eea00648bd3f6']],
+  // teams: [],
   umpire: [],
   discipline: null,
   matchSettings: {
@@ -31,7 +31,7 @@ const state = {
     "0": 0,
     "1": 0
   },
-  lastScoredTeamIndex: null,
+  lastScoredTeamIndex: 1,
   gameNumber: 1,
   isGameInterval: false,
   gameIntervalTimer: 0
@@ -107,10 +107,37 @@ const mutations = {
   },
   ['UNDO_LAST_SCORE'] (state) {
     var len = state.scoresFlow.length
-    state.scores[state.lastScoredTeamIndex]--
-    state.scoresFlow.length = len - 1
-    state.lastScoredTeamIndex = state.scoresFlow.length ? _.last(state.scoresFlow).scoredTeam : null
+    var falseWinnerIndex = state.lastScoredTeamIndex
+    var lastLastScoredTeam
+    if (state.gameNumber === 1 && !state.scoresFlow.length) return
+    if (len) { // 撤销本局的最后一分
+      state.scores[falseWinnerIndex]--
+      state.scoresFlow = cutLast(state.scoresFlow)
+      if (!state.scoresFlow.length && state.matchGames.length) {
+        lastLastScoredTeam = _.last(_.last(state.matchGames).scoresFlow).scoredTeam
+        console.log(lastLastScoredTeam)
+      }
+    }
+    else { // 撤销上一局的最后一分
+      let scores = _.last(state.matchGames).scores
+      scores[falseWinnerIndex]--
+      console.log(JSON.stringify(scores))
+      state.scoresFlow = cutLast(_.last(state.matchGames).scoresFlow)
+      state.scores = scores
+      state.matchGames = cutLast(state.matchGames)
+      state.matchScores[falseWinnerIndex]--
+      state.sideExchanged = !state.sideExchanged
+      state.gameNumber--
+      console.log(state.scoresFlow)
+    }
+    state.lastScoredTeamIndex = state.scoresFlow.length ? _.last(state.scoresFlow).scoredTeam : (lastLastScoredTeam !== undefined ? lastLastScoredTeam : null)
   }
+}
+
+function cutLast (arr) {
+  var len = arr.length
+  if (len) arr.length = len - 1
+  return arr
 }
 
 export default {

@@ -24,6 +24,14 @@ export default {
         })
       }
     })
+  },
+
+  setMatchState (roomId, state) {
+    const url = `${host}/matchRoom/${roomId}/state.json`
+    return fetch(url, {
+      method: 'PUT',
+      body: state
+    }).then(res => res.json())
   }
 
 

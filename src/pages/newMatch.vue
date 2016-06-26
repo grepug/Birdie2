@@ -16,7 +16,7 @@
         select-cell(:after="true", :options="[{text: '21分制', value: 21},{text: '11分制', value: 11}, {text: '15分制', value: 15}]", :selected.sync="matchSettings.scoringSys")
           span(slot="header") 得分制
       .button-area
-        weui-button(type="primary", :disabled="!isMatchReady", v-if="isHost") 开始比赛
+        weui-button(type="primary", :disabled="!isMatchReady", v-if="isHost", @click="startMatch") 开始比赛
     toast-view(:text="toastText")
     invite-players-view(:is-Invite-Players-Popup-Show.sync="isInvitePlayersPopupShow", :cid="cid")
 
@@ -33,7 +33,7 @@
   import matchRoom from '../js/matchRoomWd'
   import sortable from '../js/sortable'
   import {getUserObj, currentMatchSettings, getOthersUserObj, getMembers} from '../vuex/getters'
-  import {changeTeams, addMember, changeMatchSettings, addMatchRoomInvitees} from '../vuex/actions/match'
+  import {changeTeams, addMember, changeMatchSettings, addMatchRoomInvitees, createMatch} from '../vuex/actions/match'
   import {addOthersUserObj} from '../vuex/actions/user'
 
   window.$ = $
@@ -58,7 +58,8 @@
         isMatchReady ({match}) {
           return !!match.matchReady
         },
-        sortableListSorted: ({ui}) => ui.sortableListSorted
+        sortableListSorted: ({ui}) => ui.sortableListSorted,
+        isUmpire: ({match, user}) => match.umpire.indexOf(user.userObj.id) !== -1
       },
       actions: {
         changeTeams,
@@ -68,12 +69,13 @@
         setGeneralState: ({dispatch}, _s) => dispatch('CHANGE_GENERAL_STATE', _s),
         setRoomId: ({dispatch}, roomId) => dispatch('SET_ROOM_ID', roomId),
         setMatchRoomMembers: ({dispatch}, members) => dispatch('SET_MATCHROOM_MEMBERS', members),
-        addMatchRoomInvitees
+        addMatchRoomInvitees,
+        createMatch,
+        changeMatchState: ({dispatch}, _s) => dispatch('CHANGE_MATCH_STATE', _s)
       }
     },
     data () {
       return {
-        cid: '',
         toastText: '',
         isInvitePlayersPopupShow: false,
         actionSheetShow: false,
@@ -93,11 +95,11 @@
           return sex === 1 ? '<i class="fa fa-mars"></i>' : '<i class="fa fa-venus"></i>'
         }
         return members.map(id => {
-          if (id === this.userObj.id) {
+          if (id === this.userObj.objectId) {
             return {
-              title: this.userObj.get('nickname'),
-              after: after(this.userObj.get('sex')),
-              id: this.userObj.id
+              title: this.userObj.nickname,
+              after: after(this.userObj.sex),
+              id: this.userObj.objectId
             }
           }
           var r = _.findWhere(this.othersUserObj, {objectId: id})
@@ -131,8 +133,17 @@
         matchRoom.sendOrder(order)
       },
       onLiPress (index) {
-        // if (this.members[index] === this.userObj.id) return
+        // if (this.members[index] === this.userObj.objectId) return
         this.actionSheetShow = true
+      },
+      startMatch () {
+        if (this.isUmpire) {
+          this.createMatch().then(ret => {
+            this.changeMatchState('playing')
+            this.setGeneralState('matchUmpiring')
+            this.$router.go('/scoringPage')
+          })
+        }
       },
       menusClick () {
         return
@@ -205,7 +216,7 @@
   main {
     position: relative;
     .sortable {
-      margin-top: 1.8rem;
+      margin-top: 3.8rem;
     }
     .team-indicator {
       position: absolute;

@@ -12,7 +12,7 @@ export const getAllUsers = function ({ dispatch, state }) {
 export const addOthersUserObj = function ({dispatch, state}, userObjIds) {
   var unstoredObjs = userObjIds.map(id => {
     var r = _.findWhere(state.user.userObjs, {objectId: id})
-    if (!r && id !== state.user.userObj.id) return id
+    if (!r && id !== state.user.userObj.objectId) return id
     return null
   }).filter(x => x)
   if (!unstoredObjs.length) return

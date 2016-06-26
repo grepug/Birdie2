@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import storage from './storage'
+import undoMatchScores from './middlewares/undoMatchScores'
 import general from './modules/general'
 import user from './modules/user'
 import match from './modules/match'
@@ -15,7 +16,7 @@ export default new Vuex.Store({
     match,
     ui
   },
-  middlewares: [storage]
+  middlewares: [storage, undoMatchScores]
   // state,
   // mutations
 })
