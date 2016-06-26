@@ -36,6 +36,7 @@
   import sortable from '../js/sortable'
   import Clock from '../js/Clock'
   import _ from 'underscore'
+  import {addOthersUserObj} from '../vuex/actions/user'
   import snapshot from '../js/matchSnapshot'
 
   const timer = new Clock()
@@ -67,8 +68,13 @@
             if (id === user.userObj.objectId) {
               return user.userObj
             }
-            return _.findWhere(user.userObjs, {objectId: id})
-          }))
+            return _.findWhere(user.userObjs, {objectId: id}) ||
+            {
+              sex: 1,
+              headimgurl: '',
+              nickname: '加载中'
+            }
+          })).filter(x => x)
           if (match.sideExchanged) t = t.reverse()
           console.log(t)
           return t
@@ -84,6 +90,7 @@
         sideExchanged: ({match}) => match.sideExchanged
       },
       actions: {
+        addOthersUserObj,
         clockTicking: ({dispatch}, cl, dur) => dispatch('CHANGE_MATCH_DURATION', cl, dur),
         addScore ({dispatch, state}, index) {
           var {match, court} = state
@@ -220,6 +227,7 @@
       // clock.initClock((cl) => {
       //   this.clockTicking(cl, clock.duration)
       // })
+      this.addOthersUserObj(_.flatten(this.$store.state.court.teams.concat(this.$store.state.court.umpire)))
       window.vm = this
     }
   }
