@@ -1,5 +1,4 @@
 import _ from 'underscore'
-import localforage from 'localforage'
 import snapshot from '../js/matchSnapshot'
 
 const storage = {
@@ -15,9 +14,6 @@ const storage = {
       // localStorage.setItem('scoresFlow', JSON.stringify(scoresFlow))
       // console.log(scoresFlow)
       snapshot.save(state)
-      .then(ret => {
-        console.log(ret)
-      })
     }
 
   }
