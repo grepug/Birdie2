@@ -5,7 +5,7 @@
         a.link(href="javascript:;") 第{{gameNumber}}局
       .center 计分器
       .right
-        a.link(href="javascript:;", @click="exchange") 更多
+        a.link(href="javascript:;", @click="more") 更多
     main
       versus-view(:teams="teams", :points="scores", :scored-team="lastScoredTeamIndex", :side-exchanged="sideExchanged", @on-add-point="addScore")
       sortable-lists-view(:list="toolList")
@@ -20,6 +20,7 @@
         p(v-text="confirmDialogText")
       dialog(v-if="gameUndoDialogShow", type="confirm", title="提示", confirm-button="确定", cancel-button="撤销", @weui-dialog-confirm="noUndo", @weui-dialog-cancel="doUndo")
     toast-view
+    actionsheet(:actions="actions", :show.sync="actionSheetShow", :menus="actionSheetMenus", :title="title", @weui-menu-click="menusClick")
 
 </template>
 
@@ -31,7 +32,8 @@
     sortableListsView
   } from '../components'
   import {
-    Dialog
+    Dialog,
+    Actionsheet
   } from 'vue-weui'
   import sortable from '../js/sortable'
   import Clock from '../js/Clock'
@@ -48,7 +50,8 @@
       toastView,
       versusView,
       sortableListsView,
-      Dialog
+      Dialog,
+      Actionsheet
     },
     vuex: {
       getters: {
@@ -130,7 +133,7 @@
             }
           }
         },
-        exchangeSide: ({dispatch}) => dispatch('EXCHANGE_TEAMS'),
+        exchangeSide: ({dispatch}) => dispatch('EXCHANGE_SIDES'),
         removeGameInterval: ({dispatch}) => {
           dispatch('REMOVE_GAME_INTERVAL')
           timer.cancel(timer.timer)
@@ -142,12 +145,29 @@
         confirmDialogShow: false,
         confirmDialogText: '',
         confirmDialogState: null,
-        gameUndoDialogShow: false
+        gameUndoDialogShow: false,
+        actions: {
+          action1: '取消'
+        },
+        actionSheetMenus: {
+          exchangeSide: '交换场地'
+
+        },
+        actionSheetShow: false
       }
     },
     methods: {
-      exchange () {
-        snapshot.revert(this.$store.state.match)
+      more () {
+        // snapshot.revert(this.$store.state.match)
+        this.actionSheetShow = true
+      },
+      menusClick (type) {
+        switch (type) {
+          case 'exchangeSide':
+            this.exchangeSide()
+            break
+        }
+        this.actionSheetShow = false
       },
       viewResult () {
         this.$router.go()
@@ -226,9 +246,9 @@
     ready () {
       sortable.sortableToggle()
       snapshot.save(this.$store.state)
-      clock.initClock((cl) => {
-        this.clockTicking(cl, clock.duration)
-      })
+      // clock.initClock((cl) => {
+      //   this.clockTicking(cl, clock.duration)
+      // })
       this.addOthersUserObj(_.flatten(this.$store.state.court.teams.concat(this.$store.state.court.umpire)))
       window.vm = this
     }
