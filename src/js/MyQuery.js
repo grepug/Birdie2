@@ -87,7 +87,7 @@ class MyQuery {
   each (cb) {
     for (var i = 0; i < this.$el.length; i++) {
       var ret = cb.bind(this.$el[i])(this.$el[i], i)
-      if (ret === false) return
+      if (ret === false) continue
     }
   }
 
@@ -95,7 +95,7 @@ class MyQuery {
     var arr = []
     for (var i = 0; i < this.$el.length; i++) {
       var ret = cb.bind(this.$el[i])(i, this.$el[i])
-      if (ret === false) return
+      if (ret === false) continue
       arr.push(ret)
     }
     return arr
