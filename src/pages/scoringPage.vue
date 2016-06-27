@@ -7,7 +7,7 @@
       .right
         a.link(href="javascript:;", @click="more") 更多
     main
-      versus-view(:teams="teams", :points="scores", :scored-team="lastScoredTeamIndex", :side-exchanged="sideExchanged", @on-add-point="addScore")
+      versus-view(:teams="teams", :points="scores", :scored-team="lastScoredTeamIndex", :side-exchanged="sideExchanged", @on-add-point="addScore", @on-head-click="headClick")
       sortable-lists-view(:list="toolList")
       .buttons
         a.button(href="javascript:;", @click="undo") 撤销
@@ -21,6 +21,7 @@
       dialog(v-if="gameUndoDialogShow", type="confirm", title="提示", confirm-button="确定", cancel-button="撤销", @weui-dialog-confirm="noUndo", @weui-dialog-cancel="doUndo")
     toast-view
     actionsheet(:actions="actions", :show.sync="actionSheetShow", :menus="actionSheetMenus", :title="title", @weui-menu-click="menusClick")
+    actionsheet(:actions="actions", :show.sync="actionSheetShow2", :menus="actionSheetMenus2", :title="title", @weui-menu-click="menusClick")
 
 </template>
 
@@ -39,6 +40,7 @@
   import Clock from '../js/Clock'
   import _ from 'underscore'
   import {addOthersUserObj} from '../vuex/actions/user'
+  import {saveMatch} from '../vuex/actions/match'
   import snapshot from '../js/matchSnapshot'
 
   const timer = new Clock()
@@ -137,7 +139,15 @@
         removeGameInterval: ({dispatch}) => {
           dispatch('REMOVE_GAME_INTERVAL')
           timer.cancel(timer.timer)
-        }
+        },
+        saveMatch,
+        headClick ({dispatch, state}, index) {
+          if (state.match.sideExchanged) index = index === 0 ? 1 : 0
+          this.actionSheet2Index = index
+          this.actionSheetMenus2.withdrawl = this.getUserObj(state.court.teams[index]).map(x => x.nickname).join(' / ') + '退赛'
+          this.actionSheetShow2 = true
+        },
+        setWithdrawl: ({dispatch, state}, index) => dispatch('SET_WITHDRAWL', index)
       }
     },
     data () {
@@ -151,20 +161,28 @@
         },
         actionSheetMenus: {
           exchangeSide: '交换场地'
-
         },
-        actionSheetShow: false
+        actionSheetMenus2: {
+          withdrawl: '退赛'
+        },
+        actionSheetShow: false,
+        actionSheetShow2: false,
+        actionSheet2Index: null
       }
     },
     methods: {
       more () {
-        // snapshot.revert(this.$store.state.match)
         this.actionSheetShow = true
       },
       menusClick (type) {
+        console.log(type)
         switch (type) {
           case 'exchangeSide':
             this.exchangeSide()
+            break
+          case 'withdrawl':
+            this.setWithdrawl(this.actionSheet2Index)
+            this.matchComplete()
             break
         }
         this.actionSheetShow = false
@@ -182,6 +200,7 @@
       },
       matchComplete () {
         clock.cancel()
+        this.saveMatch()
       },
       undoBetweenGames (cb, cb1) {
 
@@ -191,9 +210,6 @@
       },
       noUndo () {
 
-      },
-      withdrawl () {
-        return
       },
       pause () {
         return
@@ -208,6 +224,16 @@
         }
         this.confirmDialogShow = false
         return
+      },
+      getUserObj (ids) {
+        var user = this.$store.state.user
+        if (!_.isArray(ids)) ids = [ids]
+        return ids.map(el => {
+          if (el === user.userObj.objectId) return user.userObj
+          var r = _.findWhere(user.userObjs, {objectId: el})
+          if (r) return r
+          return null
+        })
       }
     },
     computed: {

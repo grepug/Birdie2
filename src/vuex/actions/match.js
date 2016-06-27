@@ -77,3 +77,21 @@ export const createMatch = ({dispatch, state}) => {
     return api.setMatchState(court.roomId, 'playing')
   })
 }
+
+export const saveMatch = ({state}) => {
+  var {matchObjId, matchGames, matchDuration, matchScores, withdrawlIndex} = state.match
+  var winnerIndex
+  if (withdrawlIndex === null) winnerIndex = matchScores[0] > matchScores[1] ? 0 : 1
+  winnerIndex = withdrawlIndex === 0 ? 1 : 0
+  return AV.Cloud.run('match', {
+    method: 'save',
+    matchObjId,
+    matchGames,
+    matchDuration,
+    withdrawlIndex,
+    winnerIndex,
+    matchScores: _.map(matchScores, x => x)
+  }).then(ret => {
+    console.log(ret)
+  }).catch(err => console.log(err))
+}

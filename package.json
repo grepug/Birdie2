@@ -58,6 +58,7 @@
     "vue-hot-reload-api": "^1.3.3",
     "vue-html-loader": "*",
     "vue-loader": "^8.5.3",
+    "vue-resource": "^0.9.1",
     "vue-touch": "^1.1.0",
     "vue-weui": "*",
     "webpack": "*",

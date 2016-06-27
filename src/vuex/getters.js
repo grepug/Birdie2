@@ -1,9 +1,5 @@
 import _ from 'underscore'
 
-export const getUserObj = state => {
-  return state.user.userObj
-}
-
 // export const getMatchRoomMembers = state => {
 //   return state.matchRoom.members
 // }
@@ -23,6 +19,14 @@ export const currentMatchSettings = ({court}) => {
 
 export const getOthersUserObj = state => {
   return state.user.userObjs
+}
+
+export const getUserObj = ({user}, userObjId) => {
+  if (user.userObj.objectId === userObjId || !userObjId) {
+    return user.userObj
+  }
+  var r = _.findWhere(user.userObjs, {objectId: userObjId})
+  if (r) return r
 }
 
 export const getMembers = state => {

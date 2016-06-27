@@ -18,7 +18,9 @@ const state = {
   lastScoredTeamIndex: 1,
   gameNumber: 1,
   isGameInterval: false,
-  gameIntervalTimer: 0
+  gameIntervalTimer: 0,
+  matchObjId: '576f4372816dfa0055dc974b',
+  withdrawl: null
 }
 
 const mutations = {
@@ -65,6 +67,9 @@ const mutations = {
   ['REMOVE_GAME_INTERVAL'] (state) {
     state.isGameInterval = false
     state.gameIntervalTimer = 0
+  },
+  ['SET_WITHDRAWL'] (state, index) {
+    state.withdrawl = index
   }
 }
 
