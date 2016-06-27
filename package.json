@@ -124,6 +124,7 @@
     "vue-html-loader": "*",
     "vue-loader": "*",
     "vue-router": "*",
+    "vue-resource": "*",
     "vue-style-loader": "*",
     "vue-touch": "*",
     "vue-weui": "*",

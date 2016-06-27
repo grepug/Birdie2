@@ -3,12 +3,14 @@ import Router from 'vue-router'
 import VueTouch from 'vue-touch'
 import routerConfig from './routerConfig'
 import fastclick from 'fastclick'
-import Mint from 'mint-ui'
+// import Mint from 'mint-ui'
 import store from './vuex/store'
+import VueResource from 'vue-resource'
 
 Vue.use(Router)
 Vue.use(VueTouch)
-Vue.use(Mint)
+// Vue.use(Mint)
+Vue.use(VueResource)
 
 fastclick.attach(document.body)
 
