@@ -42,6 +42,9 @@
   import {addOthersUserObj} from '../vuex/actions/user'
   import {saveMatch} from '../vuex/actions/match'
   import snapshot from '../js/matchSnapshot'
+  import {getUserObj} from '../methods/user'
+  import {getMembers} from '../vuex/getters'
+  import {toArray, exchange} from '../js/utils'
 
   const timer = new Clock()
   const clock = new Clock()
@@ -57,17 +60,18 @@
     },
     vuex: {
       getters: {
+        members: getMembers,
         matchClock: ({match}) => match.matchClock,
         scores: ({match}) => {
-          var s = JSON.parse(JSON.stringify(match.scores))
+          var s = _.clone(match.scores)
           if (match.sideExchanged) s = {'0': s['1'], '1': s['0']}
           return s
         },
         currentMatchScore: ({match}) => {
           var ret = match.matchGames.map(el => {
-            return _.map(el.scores, el2 => el2).join(':')
+            return toArray(el.scores).join(':')
           }).join(' ')
-          if (match.matchState === 'playing') ret += ' ' + _.map(match.scores, el => el).join(':')
+          if (match.matchState === 'playing') ret += ' ' + toArray(match.scores).join(':')
           return ret
         },
         teams: ({court, match, user}) => {
@@ -91,6 +95,7 @@
           var timeout = match.gameIntervalTimer
           return timeout === 0 ? court.gameIntervalDuration : timeout
         },
+        matchPlaying: ({match}) => match.matchState === 'playing',
         matchCompleted: ({match}) => match.matchState === 'completed',
         gameNumber: ({match}) => match.gameNumber,
         lastScoredTeamIndex: ({match}) => match.lastScoredTeamIndex,
@@ -103,9 +108,9 @@
           var {match, court} = state
           if (match.matchState !== 'playing') return
           if (match.isGameInterval) return
-          if (match.sideExchanged) index = index === 0 ? 1 : 0
+          if (match.sideExchanged) index = exchange(index)
           dispatch('CHANGE_GAME_SCORES', index)
-          var opponentIndex = index === 0 ? 1 : 0
+          var opponentIndex = exchange(index)
           var currentScoredTeamScore = match.scores[index]
           var currentOpponentTeamScore = match.scores[opponentIndex]
           var diff = currentScoredTeamScore - currentOpponentTeamScore
@@ -142,7 +147,7 @@
         },
         saveMatch,
         headClick ({dispatch, state}, index) {
-          if (state.match.sideExchanged) index = index === 0 ? 1 : 0
+          if (state.match.sideExchanged) index = exchange(index)
           this.actionSheet2Index = index
           this.actionSheetMenus2.withdrawl = this.getUserObj(state.court.teams[index]).map(x => x.nickname).join(' / ') + '退赛'
           this.actionSheetShow2 = true
@@ -225,16 +230,7 @@
         this.confirmDialogShow = false
         return
       },
-      getUserObj (ids) {
-        var user = this.$store.state.user
-        if (!_.isArray(ids)) ids = [ids]
-        return ids.map(el => {
-          if (el === user.userObj.objectId) return user.userObj
-          var r = _.findWhere(user.userObjs, {objectId: el})
-          if (r) return r
-          return null
-        })
-      }
+      getUserObj
     },
     computed: {
       toolList () {
@@ -275,7 +271,7 @@
       // clock.initClock((cl) => {
       //   this.clockTicking(cl, clock.duration)
       // })
-      this.addOthersUserObj(_.flatten(this.$store.state.court.teams.concat(this.$store.state.court.umpire)))
+      this.addOthersUserObj(this.members)
       window.vm = this
     }
   }

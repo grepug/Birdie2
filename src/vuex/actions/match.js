@@ -1,5 +1,6 @@
 import AV from '../../js/AV'
 import api from '../../js/wilddogApi'
+import {toArray, exchange} from '../../js/utils'
 import _ from 'underscore'
 
 export const create = ({dispatch, state}) => {
@@ -82,7 +83,7 @@ export const saveMatch = ({state}) => {
   var {matchObjId, matchGames, matchDuration, matchScores, withdrawlIndex} = state.match
   var winnerIndex
   if (withdrawlIndex === null) winnerIndex = matchScores[0] > matchScores[1] ? 0 : 1
-  winnerIndex = withdrawlIndex === 0 ? 1 : 0
+  winnerIndex = exchange(winnerIndex)
   return AV.Cloud.run('match', {
     method: 'save',
     matchObjId,
@@ -90,7 +91,7 @@ export const saveMatch = ({state}) => {
     matchDuration,
     withdrawlIndex,
     winnerIndex,
-    matchScores: _.map(matchScores, x => x)
+    matchScores: toArray(matchScores)
   }).then(ret => {
     console.log(ret)
   }).catch(err => console.log(err))
