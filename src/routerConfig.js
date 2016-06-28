@@ -17,6 +17,9 @@ export default function (router) {
     },
     '/friends': {
       component: view('./pages/friends')
+    },
+    '/matchResults': {
+      component: view('./pages/matchResults')
     }
   })
 
