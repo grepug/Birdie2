@@ -92,7 +92,5 @@ export const saveMatch = ({state}) => {
     withdrawlIndex,
     winnerIndex,
     matchScores: toArray(matchScores)
-  }).then(ret => {
-    console.log(ret)
-  }).catch(err => console.log(err))
+  })
 }

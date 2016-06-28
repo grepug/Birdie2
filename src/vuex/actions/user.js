@@ -20,7 +20,6 @@ export const addOthersUserObj = function ({dispatch, state}, userObjIds) {
     method: 'getUserObjByIds',
     userObjIds: unstoredObjs
   }).then(ret => {
-    console.log(ret)
     if (!ret || !ret.length) return
     dispatch('ADD_OTHER_USEROBJS', ret)
   }).catch(err => console.log(err))

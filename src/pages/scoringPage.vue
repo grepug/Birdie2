@@ -15,7 +15,8 @@
         a.button(href="javascript:;", @click="matchComplete", v-show="matchCompleted") 完成
       dialog(v-if="isGameInterval", type="alert", title="中场间歇", confirm-button="取消间歇", @weui-dialog-confirm="removeGameInterval")
         h4(style="text-align: center") 中场间歇还有{{gameIntervalTimer}}秒
-      //- dialog(v-if="matchCompleted", type="alert", title="比赛结束", confirm-button="查看结果", @weui-dialog-confirm="viewResult")
+      dialog(v-if="matchCompletedDialogShow", type="alert", title="比赛结束", confirm-button="查看结果", @weui-dialog-confirm="viewResult")
+        p 比赛结束
       dialog(v-if="confirmDialogShow", type="confirm", title="提示", confirm-button="确定", @weui-dialog-confirm="confirm", @weui-dialog-cancel="confirmDialogShow = false")
         p(v-text="confirmDialogText")
       dialog(v-if="gameUndoDialogShow", type="confirm", title="提示", confirm-button="确定", cancel-button="撤销", @weui-dialog-confirm="noUndo", @weui-dialog-cancel="doUndo")
@@ -87,7 +88,6 @@
             }
           })).filter(x => x)
           if (match.sideExchanged) t = t.reverse()
-          console.log(t)
           return t
         },
         isGameInterval: ({match}) => match.isGameInterval,
@@ -152,7 +152,8 @@
           this.actionSheetMenus2.withdrawl = this.getUserObj(state.court.teams[index]).map(x => x.nickname).join(' / ') + '退赛'
           this.actionSheetShow2 = true
         },
-        setWithdrawl: ({dispatch, state}, index) => dispatch('SET_WITHDRAWL', index)
+        setWithdrawl: ({dispatch, state}, index) => dispatch('SET_WITHDRAWL', index),
+        setMatchResults: ({dispatch}, results) => dispatch('SET_MATCH_RESULTS', results)
       }
     },
     data () {
@@ -161,6 +162,7 @@
         confirmDialogText: '',
         confirmDialogState: null,
         gameUndoDialogShow: false,
+        matchCompletedDialogShow: false,
         actions: {
           action1: '取消'
         },
@@ -193,7 +195,9 @@
         this.actionSheetShow = false
       },
       viewResult () {
-        this.$router.go()
+        this.$router.go({
+          path: '/matchResults'
+        })
       },
       undo () {
         var match = this.$store.state.match
@@ -205,7 +209,15 @@
       },
       matchComplete () {
         clock.cancel()
-        this.saveMatch()
+        this.saveMatch().then(ret => {
+          console.log(ret)
+          this.setMatchResults({
+            maxConsecutivePoints: ret.maxConsecutivePoints,
+            maxMatchConsecutivePoints: ret.maxMatchConsecutivePoints,
+            scoringArr: ret.scoringArr
+          })
+          this.matchCompletedDialogShow = true
+        }).catch(err => console.log(err))
       },
       undoBetweenGames (cb, cb1) {
 

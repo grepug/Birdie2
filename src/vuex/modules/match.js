@@ -20,7 +20,8 @@ const state = {
   isGameInterval: false,
   gameIntervalTimer: 0,
   matchObjId: '576f4372816dfa0055dc974b',
-  withdrawl: null
+  withdrawl: null,
+  results: null
 }
 
 const mutations = {
@@ -35,7 +36,8 @@ const mutations = {
     state.scores[team]++
     state.scoresFlow.push({
       scoredTeam: team,
-      duration: state.matchDuration
+      duration: state.matchDuration,
+      currentScore: state.scores[team]
     })
     state.lastScoredTeamIndex = team
   },
@@ -70,6 +72,9 @@ const mutations = {
   },
   ['SET_WITHDRAWL'] (state, index) {
     state.withdrawl = index
+  },
+  ['SET_MATCH_RESULTS'] (state, results) {
+    state.results = results
   }
 }
 
