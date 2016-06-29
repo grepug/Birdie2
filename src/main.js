@@ -5,12 +5,14 @@ import routerConfig from './routerConfig'
 import fastclick from 'fastclick'
 // import Mint from 'mint-ui'
 import store from './vuex/store'
-import VueResource from 'vue-resource'
+import VueValidator from 'vue-validator'
+// import VueResource from 'vue-resource'
 
 Vue.use(Router)
 Vue.use(VueTouch)
+Vue.use(VueValidator)
 // Vue.use(Mint)
-Vue.use(VueResource)
+// Vue.use(VueResource)
 
 fastclick.attach(document.body)
 

@@ -20,6 +20,12 @@ export default function (router) {
     },
     '/matchResults': {
       component: view('./pages/matchResults')
+    },
+    '/tournaments': {
+      component: view('./pages/tournaments')
+    },
+    '/createTournament': {
+      component: view('./pages/createTournament')
     }
   })
 
