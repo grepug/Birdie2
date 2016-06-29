@@ -1,5 +1,5 @@
 import AV from '../../js/AV'
-import {toArray, exchange} from '../../js/utils'
+import {toArray, exchange, beArray} from '../../js/utils'
 import _ from 'underscore'
 import {addOthersUserObj} from './user'
 
@@ -18,4 +18,13 @@ export const addMatchResults = ({dispatch, state}, matchObjId) => {
       addOthersUserObj({dispatch, state}, userObjIds)
     }).catch(err => console.log(err))
   }
+}
+
+export const addTournaments = ({dispatch}, ids) => {
+  return AV.Cloud.run('tournament', {
+    method: 'get',
+    ids: ids ? beArray(ids) : null
+  }).then(ret => {
+    dispatch('ADD_TOURNAMENTS', ret)
+  })
 }

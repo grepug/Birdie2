@@ -12,7 +12,7 @@
           input-cell(type="text", label="赛事名", placeholder="请输入赛事名", :value.sync="name")
           input-cell(type="text", label="地点", placeholder="请输入地点", :value.sync="location")
           input-cell(type="date", label="开始时间", placeholder="请输入开始时间", :value.sync="startAt")
-          input-cell(type="textarea", placeholder="请输入赛事说明", :maxlength="400", :value.sync="discription")
+          input-cell(type="textarea", placeholder="请输入赛事说明", :maxlength="400", :value.sync="description")
         .create-sub
           cells-title 添加子赛事
           cells(type="form")
@@ -27,7 +27,7 @@
               span(slot="header") 局数
             select-cell(:after="true", :options="['21', '11', '15']", :selected.sync="scoringSysSelected")
               span(slot="header") 得分制
-            input-cell(type="textarea", placeholder="请输入子赛事说明", :maxlength="200", :value.sync="subDiscription")
+            input-cell(type="textarea", placeholder="请输入子赛事说明", :maxlength="200", :value.sync="subDescription")
           .buttons
             a.button(href="javascript:;", @click="addSubTournament") 添加子赛事
             a.button.bubble(href="javascript:;", v-link="{query: {sub: 'yes'}}")
@@ -78,7 +78,7 @@
         name: '',
         location: '',
         startAt: '',
-        discription: '',
+        description: '',
         subName: '',
         subTournaments: [],
         disciplineOptions: [{text: '男子单打', value: 'ms'}],
@@ -89,7 +89,7 @@
         scoringSysSelected: '21',
         teamsMaxSelected: '8',
         bestOfSelected: '3',
-        subDiscription: ''
+        subDescription: ''
       }
     },
     computed: {
@@ -107,7 +107,7 @@
           tournamentSys: this.tournamentSysSelected,
           bestOf: int(this.bestOfSelected),
           scoringSys: int(this.scoringSysSelected),
-          discription: trim(this.subDiscription)
+          description: trim(this.subDescription)
         })
         this.toastText = '添加成功'
       },
@@ -118,7 +118,7 @@
           name: this.name,
           location: this.location,
           startAt: this.startAt,
-          discription: this.discription,
+          description: this.description,
           subTournaments: this.subTournaments
         })
         .then(ret => console.log(ret))

@@ -24,6 +24,9 @@ export default function (router) {
     '/tournaments': {
       component: view('./pages/tournaments')
     },
+    '/tournaments/details': {
+      component: view('./pages/tournamentDetails')
+    },
     '/createTournament': {
       component: view('./pages/createTournament')
     }

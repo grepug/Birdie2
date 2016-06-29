@@ -8,7 +8,7 @@
         a.link(v-link="{path: '/createTournament'}") 创建
     main
       cells(type="access")
-        link-cell(v-for="el in list")
+        link-cell(v-for="el in list", v-link="{path: '/tournaments/details', query: {id: el.objectId}}")
           span(slot="body", v-text="el.name")
           //- span(slot="footer", v-text="el.discipline")
 </template>
@@ -24,7 +24,7 @@
     SelectCell,
     LinkCell
   } from 'vue-weui'
-  import AV from '../js/AV'
+  import {addTournaments} from '../vuex/actions/data'
 
   export default {
     components: {
@@ -35,17 +35,23 @@
       SelectCell,
       LinkCell
     },
+    vuex: {
+      getters: {
+        list: ({data}) => data.tournaments
+      },
+      actions: {
+        addTournaments
+      }
+    },
     computed: {
-      list () {
-        return []
+    },
+    data () {
+      return {
       }
     },
     ready () {
-      AV.Cloud.run('tournament', {
-        method: 'getAll'
-      }).then(ret => {
-        this.list = ret
-      })
+      window.vm = this
+      this.addTournaments()
     }
   }
 </script>

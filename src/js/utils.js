@@ -17,3 +17,8 @@ export const int = parseInt
 export const trim = function (str) {
   return str.trim()
 }
+
+export const beArray = function (param) {
+  if (_.isArray(param)) return param
+  return [param]
+}
