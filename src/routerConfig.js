@@ -29,6 +29,9 @@ export default function (router) {
     },
     '/createTournament': {
       component: view('./pages/createTournament')
+    },
+    '/bracket': {
+      component: view('./components/bracket')
     }
   })
 

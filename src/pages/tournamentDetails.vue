@@ -17,7 +17,7 @@
             span(slot="footer", v-text="thisTournament.location")
           cell()
             span(slot="body") 开始时间
-            span(slot="footer", v-text="new Date(thisTournament.startAt).getTime()")
+            span(slot="footer", v-text="thisTournamentStartAt")
           .description(v-text="thisTournament.description")
         cells-title 子赛事
           cells(type="access")
@@ -57,6 +57,7 @@
     Button
   } from 'vue-weui'
   import AV from '../js/AV'
+  import nicetime from '@grepug/nicetime'
 
   export default {
     components: {
@@ -97,6 +98,9 @@
         var subId = this.$route.query.sub
         if (!this.thisTournament) return {}
         return _.findWhere(this.thisTournament.subTournaments, {objectId: subId}) || {}
+      },
+      thisTournamentStartAt () {
+        return nicetime(this.thisTournamentStartAt)
       },
       title () {
         if (this.$route.query.sub) return '子赛事'
