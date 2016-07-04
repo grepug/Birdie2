@@ -7,7 +7,7 @@
       .right
         a.link(href="javascript:;", @click="invitePlayers", v-if="isHost") 邀请
     main
-      .main-tournament(v-if="!$route.query.sub")
+      .main-tournament(v-if="!$route.query.sub && thisTournament")
         cells
           cell()
             span(slot="body") 赛事名
@@ -92,7 +92,7 @@
     computed: {
       thisTournament () {
         var id = this.$route.query.id
-        return _.findWhere(this.tournaments, {objectId: id}) || {}
+        return _.findWhere(this.tournaments, {objectId: id})
       },
       thisSubTournament () {
         var subId = this.$route.query.sub
@@ -100,11 +100,11 @@
         return _.findWhere(this.thisTournament.subTournaments, {objectId: subId}) || {}
       },
       thisTournamentStartAt () {
-        return nicetime(this.thisTournamentStartAt)
+        return nicetime({date: this.thisTournament.startAt}).get()
       },
       title () {
         if (this.$route.query.sub) return '子赛事'
-        return this.thisTournament.name
+        return this.thisTournament && this.thisTournament.name
       },
       signUpButtonText () {
         if (this.thisSubTournament.hasSignedUp) return '已报名'
