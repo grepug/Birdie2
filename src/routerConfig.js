@@ -9,6 +9,9 @@ export default function (router) {
     '/login': {
       component: view('./pages/login')
     },
+    '/setUserInfo': {
+      component: view('./pages/setUserInfo')
+    },
     '/newMatch': {
       component: view('./pages/newMatch')
     },
@@ -36,15 +39,20 @@ export default function (router) {
   })
 
   router.beforeEach(function (transition) {
-    if (!AV.User.current()) {
+    var userObj = AV.User.current()
+    if (!userObj) {
       if (transition.to.path !== '/login') {
         transition.redirect('/login')
       }
     } else {
-      store.dispatch('USERLOGED')
-      store.dispatch('SET_USEROBJ', AV.User.current().toJSON())
-      if (transition.to.path === '/login') {
-        transition.redirect('/')
+      if (!userObj.get('nickname')) {
+        transition.redirect('/setUserInfo')
+      } else {
+        store.dispatch('USERLOGED')
+        store.dispatch('SET_USEROBJ', AV.User.current().toJSON())
+        if (transition.to.path === '/login') {
+          transition.redirect('/')
+        }
       }
     }
 

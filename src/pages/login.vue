@@ -41,19 +41,21 @@
             // }).catch(function (err) {
             //   console.log(err)
             // })
-
-            var userinfo = JSON.parse(cookie.get('wx_userinfo').slice(2))
-            console.log(userinfo)
             AV.User.logInWithMobilePhone(this.phone, this.valicode).then(function (ret) {
-              console.log(ret)
-              return ret.save({
-                openid: userinfo.openid,
-                nickname: userinfo.nickname,
-                headimgurl: userinfo.headimgurl,
-                sex: userinfo.sex
-              })
-            }).then(function () {
-              window.location.reload()
+              var cookieInfo = cookie.get('wx_userinfo')
+              if (cookieInfo) {
+                var userinfo = JSON.parse(cookie.get('wx_userinfo').slice(2))
+                return ret.save({
+                  openid: userinfo.openid,
+                  nickname: userinfo.nickname,
+                  headimgurl: userinfo.headimgurl,
+                  sex: userinfo.sex
+                }).then(function () {
+                  window.location.reload()
+                })
+              } else {
+                window.location.reload()
+              }
             }).catch(function (err) {
               console.log(err)
             })
