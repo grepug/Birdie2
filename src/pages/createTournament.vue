@@ -21,7 +21,7 @@
               span(slot="header") 项目
             select-cell(:after="true", :options="tournamentSys", :selected.sync="tournamentSysSelected")
               span(slot="header") 赛制
-            select-cell(:after="true", :options="['8', '16', '32']", :selected.sync="teamsMaxSelected")
+            select-cell(:after="true", :options="teamsMax", :selected.sync="teamsMaxSelected")
               span(slot="header") 人数上限
             select-cell(:after="true", :options="bestOf", :selected.sync="bestOfSelected")
               span(slot="header") 局数
@@ -81,13 +81,14 @@
         description: '',
         subName: '',
         subTournaments: [],
-        disciplineOptions: [{text: '男子单打', value: 'ms'}],
+        disciplineOptions: [{text: '男子单打', value: 'ms'}, {text: '双打', value: 'd'}],
         disciplineSelected: 'ms',
-        tournamentSys: [{text: '淘汰赛', value: 'singleElimination'}],
+        tournamentSys: [{text: '淘汰赛', value: 'singleElimination'}, {text: '小组循环后淘汰', value: 'group'}, {text: '天梯积分赛', value: 'ladder'}],
         tournamentSysSelected: 'singleElimination',
         bestOf: [{text: '三局两胜', value: '3'}, {text: '一局一胜', value: '1'}, {text: '五局三胜', value: '5'}],
         scoringSysSelected: '21',
-        teamsMaxSelected: '8',
+        teamsMax: [{text: '无上限', value: 'none'}, {text: '8人', value: '8'}, {text: '16人', value: '16'}, {text: '32人', value: '32'}],
+        teamsMaxSelected: 'none',
         bestOfSelected: '3',
         subDescription: ''
       }
