@@ -32,3 +32,7 @@ export const getUserObj = ({user}, userObjId) => {
 export const getMembers = state => {
   return _.flatten(state.court.teams.concat(state.court.umpire))
 }
+
+export const getNotifications = state => {
+  return state.data.notification
+}

@@ -1,5 +1,6 @@
 import AV from '../../js/AV'
 import _ from 'underscore'
+import {beArray} from '../../js/utils'
 
 export const getAllUsers = function ({ dispatch, state }) {
   return AV.Cloud.run('user', {
@@ -10,7 +11,7 @@ export const getAllUsers = function ({ dispatch, state }) {
 }
 
 export const addOthersUserObj = function ({dispatch, state}, userObjIds) {
-  var unstoredObjs = userObjIds.map(id => {
+  var unstoredObjs = beArray(userObjIds).map(id => {
     var r = _.findWhere(state.user.userObjs, {objectId: id})
     if (!r && id !== state.user.userObj.objectId) return id
     return null

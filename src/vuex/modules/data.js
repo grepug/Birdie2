@@ -4,7 +4,8 @@ import {beArray} from '../../js/utils'
 const state = {
   matchResults: [],
   tournaments: [],
-  doubles: []
+  doubles: [],
+  notification: []
 }
 
 const mutations = {
@@ -33,6 +34,17 @@ const mutations = {
     beArray(doublesObjs).forEach((el, index) => {
       var r = _.findWhere(state.doubles, {objectId: el.objectId})
       if (!r) state.doubles.push(el)
+    })
+  },
+  ADD_NOTIFICATIONS (state, notificationObjs) {
+    // // state.notification = _.extend(state.notification, notificationObjs)
+    // for (var p in notificationObjs) {
+    //   if (notificationObjs.hasOwnProperty(p)) {
+    //     state.notification[p] = notificationObjs[p]
+    //   }
+    // }
+    beArray(notificationObjs).forEach((el, index) => {
+      state.notification.push(el)
     })
   }
 }

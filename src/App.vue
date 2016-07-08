@@ -30,7 +30,7 @@
             a(href="javascript:;") 邀请历史
         .row
           div
-            a(v-link="{path: '/friends'}") 附近球友
+            a(v-link="{path: '/notification'}") 通知中心
           div
             a(v-link="{path: '/tournaments'}") 赛事
           div

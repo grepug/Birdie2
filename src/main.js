@@ -6,6 +6,7 @@ import fastclick from 'fastclick'
 // import Mint from 'mint-ui'
 import store from './vuex/store'
 import VueValidator from 'vue-validator'
+import './js/notification'
 // import VueResource from 'vue-resource'
 
 Vue.use(Router)

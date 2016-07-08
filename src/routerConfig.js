@@ -42,6 +42,12 @@ export default function (router) {
     '/user/doubles/createDoubles': {
       component: view('./pages/createDoubles')
     },
+    '/notification': {
+      component: view('./pages/notification')
+    },
+    '/notification/details': {
+      component: view('./pages/notificationDetails')
+    },
     '/bracket': {
       component: view('./components/bracket')
     }
