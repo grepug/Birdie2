@@ -33,6 +33,15 @@ export default function (router) {
     '/createTournament': {
       component: view('./pages/createTournament')
     },
+    '/user': {
+      component: view('./pages/user')
+    },
+    '/user/doubles': {
+      component: view('./pages/doubles')
+    },
+    '/user/doubles/createDoubles': {
+      component: view('./pages/createDoubles')
+    },
     '/bracket': {
       component: view('./components/bracket')
     }
