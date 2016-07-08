@@ -3,7 +3,8 @@ import {beArray} from '../../js/utils'
 
 const state = {
   matchResults: [],
-  tournaments: []
+  tournaments: [],
+  doubles: []
 }
 
 const mutations = {
@@ -26,6 +27,12 @@ const mutations = {
           }
         })
       }
+    })
+  },
+  ADD_DOUBLES_OBJS (state, doublesObjs) {
+    beArray(doublesObjs).forEach((el, index) => {
+      var r = _.findWhere(state.doubles, {objectId: el.objectId})
+      if (!r) state.doubles.push(el)
     })
   }
 }

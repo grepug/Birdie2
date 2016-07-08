@@ -9,12 +9,9 @@
     main
       .teams
         cells(type="access")
-          link-cell(v-link="")
-            span(slot="body") 地表最强（我 / 张衢）
+          link-cell(v-link="", v-for="el in doubles")
+            span(slot="body") {{el.name}} （{{el.players[0].nickname}} / {{el.players[1].nickname}}）
             span(slot="footer") 10 / 5
-          link-cell(v-link="")
-            span(slot="body") 手动滑稽组合（我 / 李浩洋）
-            span(slot="footer") 10 / 15
 </template>
 
 <script>
@@ -25,6 +22,7 @@
     Cells,
     LinkCell
   } from 'vue-weui'
+  import {addDoublesObjs} from '../vuex/actions/data'
 
   export default {
     components: {
@@ -34,11 +32,13 @@
     },
     vuex: {
       getters: {
-
+        doubles: ({data}) => data.doubles
       },
       actions: {
-
+        addDoublesObjs
       }
+    },
+    computed: {
     },
     methods: {
       back () {
@@ -46,7 +46,8 @@
       }
     },
     ready () {
-      return
+      window.vm = this
+      this.addDoublesObjs()
     }
   }
 </script>

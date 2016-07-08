@@ -11,28 +11,33 @@
         input-cell(type="tel", label="手机号", placeholder="请输入队友手机号", :value.sync="phone")
       .button-area
         weui-button(@click="send") 发送请求
+    toast-view(:text="toastText")
 </template>
 
 <script>
   import {
-    navbarView
+    navbarView,
+    toastView
   } from '../components'
   import {
     Cells,
     InputCell,
     Button
   } from 'vue-weui'
+  import AV from '../js/AV'
 
   export default {
     components: {
       navbarView,
       Cells,
       InputCell,
-      'weui-button': Button
+      'weui-button': Button,
+      toastView
     },
     data () {
       return {
-        phone: ''
+        phone: '',
+        toastText: ''
       }
     },
     methods: {
@@ -40,7 +45,14 @@
         window.history.back()
       },
       send () {
-        return
+        return AV.Cloud.run('doubles', {
+          method: 'invite',
+          phone: this.phone
+        }).then(ret => {
+          this.toastText = '发送成功'
+        }).catch(err => {
+          this.toastText = err.errMsgCN
+        })
       }
     }
   }

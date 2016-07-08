@@ -28,3 +28,12 @@ export const addTournaments = ({dispatch}, ids) => {
     dispatch('ADD_TOURNAMENTS', ret)
   })
 }
+
+export const addDoublesObjs = ({dispatch, state}) => {
+  return AV.Cloud.run('doubles', {
+    method: 'getMyDoubles'
+  }).then(ret => {
+    console.log(ret)
+    dispatch('ADD_DOUBLES_OBJS', ret)
+  })
+}
