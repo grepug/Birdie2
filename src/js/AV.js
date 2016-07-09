@@ -9,7 +9,7 @@ AV.initialize(config.appid, config.appsecret)
 
 window.AV = AV
 
-AV.serverURL = 'http://192.168.0.100:3000'
+AV.serverURL = 'http://grepug.vip.natapp.cn'
 
 console.log(AV)
 

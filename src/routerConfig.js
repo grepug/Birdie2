@@ -30,6 +30,9 @@ export default function (router) {
     '/tournaments/details': {
       component: view('./pages/tournamentDetails')
     },
+    '/tournaments/details/orders': {
+      component: view('./pages/orders')
+    },
     '/createTournament': {
       component: view('./pages/createTournament')
     },

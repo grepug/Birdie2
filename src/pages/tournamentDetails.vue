@@ -41,6 +41,7 @@
         .button-area
           weui-button(type="primary", :plain="true", @click="signUp", :disabled="thisSubTournament.hasSignedUp") {{signUpButtonText}}
           weui-button(type="primary", :plain="true", @click="signUpUmpire", :disabled="thisSubTournament.hasSignedUpUmpire") {{signUpUmpireButtonText}}
+          weui-button(type="primary", :plain="true", v-link="{path: '/tournaments/details/orders', query: $route.query}") 查看对阵
 </template>
 
 <script>

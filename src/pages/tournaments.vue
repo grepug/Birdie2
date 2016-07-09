@@ -2,7 +2,7 @@
   div
     navbar-view
       .left
-        a.link(href="javascript:;")
+        a.link(href="javascript:;", @click="back") 返回
       .center 赛事
       .right
         a.link(v-link="{path: '/createTournament'}") 创建
@@ -47,6 +47,11 @@
     },
     data () {
       return {
+      }
+    },
+    methods: {
+      back () {
+        window.history.back()
       }
     },
     ready () {
