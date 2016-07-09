@@ -5,7 +5,7 @@
         a.link(href="javascript:;", @click="back") 返回
       .center(v-text="title")
       .right
-        a.link(href="javascript:;", @click="invitePlayers", v-if="isHost") 邀请
+        a.link(href="javascript:;", @click="tournamentStart", v-if="isChairUmpire") 开始
     main
       .main-tournament(v-if="!$route.query.sub && thisTournament")
         cells
@@ -40,6 +40,7 @@
             span(slot="footer", v-text="thisSubTournament.scoringSys")
         .button-area
           weui-button(type="primary", :plain="true", @click="signUp", :disabled="thisSubTournament.hasSignedUp") {{signUpButtonText}}
+          weui-button(type="primary", :plain="true", @click="signUpUmpire", :disabled="thisSubTournament.hasSignedUpUmpire") {{signUpUmpireButtonText}}
 </template>
 
 <script>
@@ -47,7 +48,7 @@
     navbarView
   } from '../components'
   import _ from 'underscore'
-  import {addTournaments} from '../vuex/actions/data'
+  import {isSingle} from '../js/utils'
   import {
     Cells,
     Cell,
@@ -58,6 +59,7 @@
   } from 'vue-weui'
   import AV from '../js/AV'
   import nicetime from '@grepug/nicetime'
+  import {addDoublesObjs, addTournaments} from '../vuex/actions/data'
 
   export default {
     components: {
@@ -71,19 +73,38 @@
     },
     vuex: {
       getters: {
-        tournaments: ({data}) => data.tournaments
+        tournaments: ({data}) => data.tournaments,
+        userObj: ({user}) => user.userObj,
+        myDoubles: ({data}) => data.doubles
       },
       actions: {
+        addDoublesObjs,
         addTournaments,
         signUp ({dispatch}) {
-          if (this.thisSubTournament.hasSignedUp) return
-          if (window.confirm('确认报名?')) {
+          if (this.thisSubTournamentHasSignedUp) return
+          var _isSingle = isSingle(this.thisSubTournament.discipline)
+          if (_isSingle) {
+            if (window.confirm('确认报名?')) {
+              return AV.Cloud.run('tournament', {
+                method: 'signUp',
+                id: this.$route.query.sub,
+                isSingle: true
+              }).then(ret => {
+                dispatch('SUBTOURNAMENT_SIGNUP', this.$route.query.id, this.$route.query.sub, this.userObj.objectId)
+              })
+            }
+          } else {
+            return
+          }
+        },
+        signUpUmpire ({dispatch}) {
+          if (this.thisSubTournamentHasSignedUpUmpire) return
+          if (window.confirm('确认报名裁判？')) {
             return AV.Cloud.run('tournament', {
-              method: 'signUp',
-              id: this.$route.query.sub,
-              isSingle: true
+              method: 'signUpUmpire',
+              id: this.$route.query.sub
             }).then(ret => {
-              dispatch('SUBTOURNAMENT_SIGNUP', this.$route.query.id, this.$route.query.sub)
+              dispatch('SUBTOURNAMENT_SIGNUP_UMPIRE', this.$route.query.id, this.$route.query.sub, this.userObj.objectId)
             })
           }
         }
@@ -106,14 +127,39 @@
         if (this.$route.query.sub) return '子赛事'
         return this.thisTournament && this.thisTournament.name
       },
+      thisSubTournamentHasSignedUp () {
+        if (!this.thisSubTournament.discipline) return false
+        if (isSingle(this.thisSubTournament.discipline)) {
+          if (this.thisSubTournament.signUpMembers.indexOf(this.userObj.objectId) !== -1) return true
+        } else {
+          if (this.thisSubTournament.signUpMembers.map(el => {
+            return _.findWhere(this.myDoubles, {objectId: el})
+          }).filter(x => x).length > 0) return true
+        }
+        return false
+      },
+      thisSubTournamentHasSignedUpUmpire () {
+        if (!this.thisSubTournament.signUpUmpires) return
+        return this.thisSubTournament.signUpUmpires.indexOf(this.userObj.objectId) !== -1
+      },
       signUpButtonText () {
-        if (this.thisSubTournament.hasSignedUp) return '已报名'
+        if (this.thisSubTournamentHasSignedUp) return '已报名'
         return '报名'
+      },
+      signUpUmpireButtonText () {
+        if (this.thisSubTournamentHasSignedUpUmpire) return '已报名裁判'
+        return '裁判报名'
+      },
+      isChairUmpire () {
+        return this.thisTournament && this.thisTournament.chairUmpire.id === this.userObj.objectId
       }
     },
     methods: {
       back () {
         return window.history.back()
+      },
+      tournamentStart () {
+        return
       }
     },
     ready () {
@@ -121,6 +167,7 @@
       var id = this.$route.query.id
       if (!id) this.$router.go('/tournaments')
       this.addTournaments(id)
+      this.addDoublesObjs()
     }
   }
 </script>

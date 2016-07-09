@@ -25,6 +25,7 @@ export const addTournaments = ({dispatch}, ids) => {
     method: 'get',
     ids: ids ? beArray(ids) : null
   }).then(ret => {
+    console.log(ret)
     dispatch('ADD_TOURNAMENTS', ret)
   })
 }

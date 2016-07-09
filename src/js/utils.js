@@ -23,4 +23,7 @@ export const beArray = function (param) {
   return [param]
 }
 
-// export const
+export const isSingle = function (discipline) {
+  if (discipline === 'ms' || discipline === 'ws' || discipline === 's') return true
+  return false
+}

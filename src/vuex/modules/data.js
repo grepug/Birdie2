@@ -19,12 +19,23 @@ const mutations = {
       if (!r) state.tournaments.push(el)
     })
   },
-  SUBTOURNAMENT_SIGNUP (state, tournamentObjId, subTournamentObjId) {
+  SUBTOURNAMENT_SIGNUP (state, tournamentObjId, subTournamentObjId, signUpObjId) {
     state.tournaments.forEach((el, index) => {
       if (el.objectId === tournamentObjId) {
         el.subTournaments.forEach((el2, index2) => {
           if (el2.objectId === subTournamentObjId) {
-            state.tournaments[index].subTournaments[index2].hasSignedUp = true
+            state.tournaments[index].subTournaments[index2].signUpMembers.push(signUpObjId)
+          }
+        })
+      }
+    })
+  },
+  SUBTOURNAMENT_SIGNUP_UMPIRE (state, tournamentObjId, subTournamentObjId, signUpObjId) {
+    state.tournaments.forEach((el, index) => {
+      if (el.objectId === tournamentObjId) {
+        el.subTournaments.forEach((el2, index2) => {
+          if (el2.objectId === subTournamentObjId) {
+            state.tournaments[index].subTournaments[index2].signUpUmpires.push(signUpObjId)
           }
         })
       }

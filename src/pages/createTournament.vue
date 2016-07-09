@@ -12,6 +12,7 @@
           input-cell(type="text", label="赛事名", placeholder="请输入赛事名", :value.sync="name")
           input-cell(type="text", label="地点", placeholder="请输入地点", :value.sync="location")
           input-cell(type="date", label="开始时间", placeholder="请输入开始时间", :value.sync="startAt")
+          input-cell(type="tel", label="主裁判", placeholder="请输入主裁判手机号", :value.sync="chairUmpirePhone")
           input-cell(type="textarea", placeholder="请输入赛事说明", :maxlength="400", :value.sync="description")
         .create-sub
           cells-title 添加子赛事
@@ -78,6 +79,7 @@
         name: '',
         location: '',
         startAt: '',
+        chairUmpirePhone: '',
         description: '',
         subName: '',
         subTournaments: [],
@@ -120,7 +122,8 @@
           location: this.location,
           startAt: this.startAt,
           description: this.description,
-          subTournaments: this.subTournaments
+          subTournaments: this.subTournaments,
+          chairUmpirePhone: this.chairUmpirePhone
         })
         .then(ret => console.log(ret))
         .catch(err => console.log(err))

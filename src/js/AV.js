@@ -7,4 +7,10 @@ const config = {
 
 AV.initialize(config.appid, config.appsecret)
 
+window.AV = AV
+
+AV.serverURL = 'http://192.168.0.100:3000'
+
+console.log(AV)
+
 export default AV
