@@ -48,6 +48,12 @@ export default function (router) {
     '/notification/details': {
       component: view('./pages/notificationDetails')
     },
+    '/umpire': {
+      component: view('./pages/umpire/umpire')
+    },
+    '/umpire/subTournament': {
+      component: view('./pages/umpire/subTournament')
+    },
     '/bracket': {
       component: view('./components/bracket')
     }

@@ -20,13 +20,19 @@ export const addMatchResults = ({dispatch, state}, matchObjId) => {
   }
 }
 
-export const addTournaments = ({dispatch}, ids) => {
+export const addTournaments = ({dispatch, state}, ids) => {
   return AV.Cloud.run('tournament', {
     method: 'get',
     ids: ids ? beArray(ids) : null
   }).then(ret => {
-    console.log(ret)
+    var myUmpiredTournaments = ret.map(el => {
+      el.subTournaments = el.subTournaments.map(el2 => {
+        if (el2.umpires.indexOf(state.user.userObj.objectId) !== -1) return el2
+      }).filter(x => x)
+      return el
+    }).filter(x => x)
     dispatch('ADD_TOURNAMENTS', ret)
+    dispatch('ADD_MY_UMPIRED_TOURNAMENTS', myUmpiredTournaments)
   })
 }
 

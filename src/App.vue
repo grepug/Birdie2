@@ -25,7 +25,7 @@
           div
             a(v-link="{path: '/newMatch'}") 发起比赛
           div
-            a(href="javascript:;") 比赛历史
+            a(v-link="{path: '/umpire'}") 裁判
           div
             a(href="javascript:;") 邀请历史
         .row

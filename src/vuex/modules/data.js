@@ -5,7 +5,8 @@ const state = {
   matchResults: [],
   tournaments: [],
   doubles: [],
-  notification: []
+  notification: [],
+  myUmpiredTournaments: []
 }
 
 const mutations = {
@@ -57,6 +58,9 @@ const mutations = {
     beArray(notificationObjs).forEach((el, index) => {
       state.notification.push(el)
     })
+  },
+  ADD_MY_UMPIRED_TOURNAMENTS (state, tournaments) {
+    state.myUmpiredTournaments = tournaments
   }
 }
 
