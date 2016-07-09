@@ -8,29 +8,37 @@
         a.link(href="javascript:;")
     main
       cells(type="access")
-        template(v-for="val in list", track-by="$index")
-          link-cell(v-if="val && val.type === 'doublesInvitation'")
+        template(v-for="(index, val) in list", track-by="$index")
+          link-cell(v-if="val && val.type === 'doublesInvitation'", @click="openDialog(index)")
             span(slot="body") {{val.inviterNickname}}邀请你和TA组成双打队伍
             span(slot="footer")
+    dialog(v-show="dialogShow", type="confirm", title="提示", confirm-button="接受", cancel-button="拒绝", @weui-dialog-confirm="dialogConfirm", @weui-dialog-cancel="dialogCancel")
+      p 是否接受邀请
+    toast-view(:text="toastText")
 </template>
 
 <script>
   import {
-    navbarView
+    navbarView,
+    toastView
   } from '../components'
   import {
     Cells,
-    LinkCell
+    LinkCell,
+    Dialog
   } from 'vue-weui'
   import _ from 'underscore'
+  import AV from '../js/AV'
   import {addOthersUserObj} from '../vuex/actions/user'
   import {getOthersUserObj, getNotifications} from '../vuex/getters'
 
   export default {
     components: {
       navbarView,
+      toastView,
       Cells,
-      LinkCell
+      LinkCell,
+      Dialog
     },
     vuex: {
       getters: {
@@ -57,12 +65,32 @@
     },
     data () {
       return {
-        listRaw: {}
+        dialogShow: false,
+        dialogIndex: null,
+        toastText: ''
       }
     },
     methods: {
       back () {
         window.history.back()
+      },
+      openDialog (index) {
+        this.dialogShow = true
+        this.dialogIndex = index
+      },
+      dialogConfirm () {
+        var index = this.dialogIndex
+        return AV.Cloud.run('doubles', {
+          method: 'accept',
+          inviterObjId: this.list[index].inviterObjId
+        }).then(ret => {
+          console.log(ret)
+          this.toastText = '组队成功'
+          this.dialogShow = false
+        }).catch(err => console.log(err))
+      },
+      dialogCancel () {
+        this.dialogShow = false
       }
     },
     ready () {

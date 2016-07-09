@@ -51,7 +51,8 @@
         }).then(ret => {
           this.toastText = '发送成功'
         }).catch(err => {
-          this.toastText = err.errMsgCN
+          console.log(err)
+          this.toastText = err.message.errMsgCN
         })
       }
     }
