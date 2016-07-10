@@ -8,7 +8,8 @@
         a.link(href="javascript:;")
     main
       group(:list="list")
-      bracket(:list="playoffs")
+      .b
+        bracket(:list="playoffs")
 </template>
 
 <script>
@@ -55,3 +56,11 @@
     }
   }
 </script>
+
+<style lang="less" scoped>
+  main {
+    .b {
+      overflow-x: scroll;
+    }
+  }
+</style>

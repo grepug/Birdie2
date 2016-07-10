@@ -58,7 +58,7 @@
     "timeago.js": "^1.0.3",
     "underscore": "*",
     "vue": "*",
-    "vue-bracket": "^0.0.4",
+    "vue-bracket": "^0.0.5",
     "vue-hot-reload-api": "^1.3.3",
     "vue-html-loader": "*",
     "vue-loader": "^8.5.3",
