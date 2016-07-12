@@ -13,6 +13,13 @@
     components: {
       loginView
     },
+    vuex: {
+      getters: {
+        transition: ({route}) => route.transition
+      },
+      actions: {
+      }
+    },
     data () {
       return {
         phone: '',
@@ -41,20 +48,28 @@
             // }).catch(function (err) {
             //   console.log(err)
             // })
-            AV.User.logInWithMobilePhone(this.phone, this.valicode).then(function (ret) {
+            AV.User.logInWithMobilePhone(this.phone, this.valicode).then((ret) => {
               var cookieInfo = cookie.get('wx_userinfo')
               if (cookieInfo) {
+                console.log(this.transition)
                 var userinfo = JSON.parse(cookie.get('wx_userinfo').slice(2))
                 return ret.save({
                   openid: userinfo.openid,
                   nickname: userinfo.nickname,
                   headimgurl: userinfo.headimgurl,
                   sex: userinfo.sex
-                }).then(function () {
-                  window.location.reload()
+                }).then(() => {
+                  // window.location.reload()
                 })
               } else {
-                window.location.reload()
+                // window.location.reload()
+                console.log(this.transition)
+                if (this.transition.to.path.indexOf('login') === -1) {
+                  console.log(1)
+                  this.$router.go({
+                    path: this.transition.to.path
+                  })
+                }
               }
             }).catch(function (err) {
               console.log(err)

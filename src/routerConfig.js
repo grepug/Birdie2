@@ -66,7 +66,9 @@ export default function (router) {
   })
 
   router.beforeEach(function (transition) {
+    console.log(transition)
     var userObj = AV.User.current()
+    store.dispatch('SET_TRANSITION', transition)
     if (!userObj) {
       if (transition.to.path !== '/login') {
         transition.redirect({
