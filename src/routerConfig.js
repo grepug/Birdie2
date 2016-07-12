@@ -39,6 +39,9 @@ export default function (router) {
     '/user': {
       component: view('./pages/user')
     },
+    '/user/settings': {
+      component: view('./pages/settings')
+    },
     '/user/doubles': {
       component: view('./pages/doubles')
     },
@@ -66,7 +69,10 @@ export default function (router) {
     var userObj = AV.User.current()
     if (!userObj) {
       if (transition.to.path !== '/login') {
-        transition.redirect('/login')
+        transition.redirect({
+          path: '/login',
+          query: {}
+        })
       }
     } else {
       if (!userObj.get('nickname')) {
