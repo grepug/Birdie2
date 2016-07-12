@@ -62,6 +62,17 @@ const mutations = {
   ADD_MY_UMPIRED_TOURNAMENTS (state, tournaments) {
     state.myUmpiredTournaments = tournaments
   }
+  // UPDATE_MY_UMPIRED_SUBTOURNAMENT_DATA (state, tournamentObjId, subTournamentObjId, data) {
+  //   state.myUmpiredTournaments.forEach((el, index) => {
+  //     if (el.objectId === tournamentObjId) {
+  //       el.subTournaments.forEach((el2, index2) => {
+  //         if (el2.objectId === subTournamentObjId) {
+  //           state.myUmpiredTournaments[index].subTournaments[index2].umpireData = data
+  //         }
+  //       })
+  //     }
+  //   })
+  // }
 }
 
 export default {
