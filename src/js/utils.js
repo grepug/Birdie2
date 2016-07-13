@@ -27,3 +27,7 @@ export const isSingle = function (discipline) {
   if (discipline === 'ms' || discipline === 'ws' || discipline === 's') return true
   return false
 }
+
+export const duplicate = function (obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
