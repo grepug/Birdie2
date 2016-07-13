@@ -36,7 +36,6 @@
         })
       },
       login (method) {
-        console.log(this.$log('phone'))
         switch (method) {
           case 'wx':
             break
@@ -48,6 +47,17 @@
             // }).catch(function (err) {
             //   console.log(err)
             // })
+            const go = () => {
+              if (this.transition.to.path.indexOf('login') === -1) {
+                this.$router.go({
+                  path: this.transition.to.path
+                })
+              } else {
+                this.$router.go({
+                  path: '/'
+                })
+              }
+            }
             AV.User.logInWithMobilePhone(this.phone, this.valicode).then((ret) => {
               var cookieInfo = cookie.get('wx_userinfo')
               if (cookieInfo) {
@@ -58,18 +68,9 @@
                   nickname: userinfo.nickname,
                   headimgurl: userinfo.headimgurl,
                   sex: userinfo.sex
-                }).then(() => {
-                  // window.location.reload()
-                })
+                }).then(() => go())
               } else {
-                // window.location.reload()
-                console.log(this.transition)
-                if (this.transition.to.path.indexOf('login') === -1) {
-                  console.log(1)
-                  this.$router.go({
-                    path: this.transition.to.path
-                  })
-                }
+                go()
               }
             }).catch(function (err) {
               console.log(err)
