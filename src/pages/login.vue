@@ -48,24 +48,27 @@
             //   console.log(err)
             // })
             const go = () => {
+              console.log(this.transition.to.path)
               if (this.transition.to.path.indexOf('login') === -1) {
+                console.log(this.transition.to.path)
                 this.$router.go({
                   path: this.transition.to.path
                 })
               } else {
+                console.log(2)
                 this.$router.go({
                   path: '/'
                 })
               }
             }
-            AV.User.logInWithMobilePhone(this.phone, this.valicode).then((ret) => {
+            // AV.User.logInWithMobilePhone(this.phone, this.valicode).then((ret) => {
+            AV.User.signUpOrlogInWithMobilePhone(this.phone, this.valicode).then((ret) => {
               var cookieInfo = cookie.get('wx_userinfo')
               if (cookieInfo) {
                 console.log(this.transition)
                 var userinfo = JSON.parse(cookie.get('wx_userinfo').slice(2))
                 return ret.save({
                   openid: userinfo.openid,
-                  nickname: userinfo.nickname,
                   headimgurl: userinfo.headimgurl,
                   sex: userinfo.sex
                 }).then(() => go())

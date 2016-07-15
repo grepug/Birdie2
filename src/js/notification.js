@@ -17,7 +17,7 @@ if (userObj) {
       val.ID = key
       store.dispatch('ADD_NOTIFICATIONS', val)
       userObjIds = userObjIds.concat(_.map(val, (v, k) => {
-        if (typeof v === 'string' && v.length === 24)
+        if (typeof v === 'string' && /[a-z0-9]{24}/.test(v))
         return v
       }).filter(x => x))
     })

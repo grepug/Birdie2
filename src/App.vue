@@ -5,7 +5,7 @@
         a(href="javascript:;")
       .center Birdie
       .right
-        a.link(v-link="{path: '/friends'}")
+        a.link(href="javascript:;")
           i.fa.fa-user
         a.link(href="javascript:;", v-touch:tap="openMenu")
           i.fa.fa-plus
@@ -23,18 +23,18 @@
       section.grid
         .row
           div
-            a(v-link="{path: '/newMatch'}") 发起比赛
+            a(v-link="{path: '/tournaments'}") 赛事
           div
             a(v-link="{path: '/umpire'}") 裁判
           div
-            a(href="javascript:;") 邀请历史
+            a(v-link="{path: '/notification'}") 通知中心
         .row
           div
-            a(v-link="{path: '/notification'}") 通知中心
-          div
-            a(v-link="{path: '/tournaments'}") 赛事
-          div
             a(v-link="{path: '/user'}") 用户中心
+          div
+            a -
+          div
+            a -
 </template>
 
 <script>

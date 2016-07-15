@@ -3,7 +3,7 @@
     navbar-view
       .left
         a.link(href="javascript:;", @click="back") 返回
-      .center 创建双打队伍
+      .center 双打组队
       .right
         a.link(href="javascript:;")
     main

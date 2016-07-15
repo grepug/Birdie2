@@ -9,7 +9,7 @@ export default function (router) {
     '/login': {
       component: view('./pages/login')
     },
-    '/setUserInfo': {
+    '/login/setUserInfo': {
       component: view('./pages/setUserInfo')
     },
     '/newMatch': {
@@ -38,6 +38,9 @@ export default function (router) {
     },
     '/user': {
       component: view('./pages/user')
+    },
+    '/user/userInfo': {
+      component: view('./pages/user/userInfo')
     },
     '/user/settings': {
       component: view('./pages/settings')
@@ -70,18 +73,20 @@ export default function (router) {
     var userObj = AV.User.current()
     store.dispatch('SET_TRANSITION', transition)
     if (!userObj) {
-      if (transition.to.path !== '/login') {
+      if (transition.to.path.indexOf('/login') === -1) {
         transition.redirect({
           path: '/login',
           query: {}
         })
       }
     } else {
+      store.dispatch('USERLOGED')
+      store.dispatch('SET_USEROBJ', AV.User.current().toJSON())
       if (!userObj.get('nickname')) {
-        transition.redirect('/setUserInfo')
+        if (transition.to.path.indexOf('/login') === -1) {
+          transition.redirect('/login/setUserInfo')
+        }
       } else {
-        store.dispatch('USERLOGED')
-        store.dispatch('SET_USEROBJ', AV.User.current().toJSON())
         if (transition.to.path === '/login') {
           transition.redirect('/')
         }

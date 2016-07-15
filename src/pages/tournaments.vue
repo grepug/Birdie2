@@ -2,10 +2,10 @@
   div
     navbar-view
       .left
-        a.link(href="javascript:;", @click="back") 返回
+        a.link(href="javascript:;", @click="historyBack") 返回
       .center 赛事
       .right
-        a.link(v-link="{path: '/createTournament'}") 创建
+        //- a.link(v-link="{path: '/createTournament'}") 创建
     main
       cells(type="access")
         link-cell(v-for="el in list", v-link="{path: '/tournaments/details', query: {id: el.objectId}}")
@@ -24,6 +24,7 @@
     SelectCell,
     LinkCell
   } from 'vue-weui'
+  import {historyBack} from '../js/utils'
   import {addTournaments} from '../vuex/actions/data'
 
   export default {
@@ -50,9 +51,7 @@
       }
     },
     methods: {
-      back () {
-        window.history.back()
-      }
+      historyBack
     },
     ready () {
       window.vm = this

@@ -9,8 +9,6 @@ AV.initialize(config.appid, config.appsecret)
 
 window.AV = AV
 
-AV.serverURL = 'http://grepug.vip.natapp.cn'
-
-console.log(AV)
+// AV.serverURL = 'http://grepug.vip.natapp.cn'
 
 export default AV

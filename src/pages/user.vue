@@ -8,12 +8,12 @@
         a.link(href="javascript:;")
     main
       cells(type="access")
-        link-cell(v-link="{path: '/user/userinfo'}")
+        link-cell(v-link="{path: '/user/userInfo'}")
           span(slot="body") 个人信息
           span(slot="footer")
         link-cell(v-link="{path: '/user/doubles'}")
           span(slot="body") 我的双打队伍
-          span(slot="footer") 5个
+          span(slot="footer")
       cells(type="access")
         link-cell(v-link="{path: '/user/settings'}")
           span(slot="body") 设置

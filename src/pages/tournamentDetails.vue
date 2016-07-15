@@ -2,10 +2,10 @@
   div
     navbar-view
       .left
-        a.link(href="javascript:;", @click="back") 返回
-      .center(v-text="title")
+        a.link(href="javascript:;", @click="historyBack") 返回
+      .center 赛事详情
       .right
-        a.link(href="javascript:;", @click="tournamentStart", v-if="isChairUmpire") 开始
+        //- a.link(href="javascript:;", @click="tournamentStart", v-if="isChairUmpire") 开始
     main
       .main-tournament(v-if="!$route.query.sub && thisTournament")
         cells
@@ -22,8 +22,8 @@
         cells-title 子赛事
           cells(type="access")
             cell(v-for="el in thisTournament.subTournaments", v-link="{query: {id: thisTournament.objectId, sub: el.objectId}}")
-              span(slot="body", v-text="el.name + ' ' + el.discipline")
-              span(slot="footer") 报名截止{{el.signUpDue}}
+              span(slot="body", v-text="el.name")
+              span(slot="footer") 报名截止{{nicetime({date: el.signUpDue}).get('Y-M-d')}}
       .sub-tournaments(v-if="$route.query.sub")
         cells
           cell()
@@ -31,17 +31,24 @@
             span(slot="footer", v-text="thisSubTournament.name")
           cell()
             span(slot="body") 项目
-            span(slot="footer", v-text="thisSubTournament.discipline")
+            span(slot="footer", v-text="disciplineCN(thisSubTournament.discipline)")
           cell()
             span(slot="body") 局数
-            span(slot="footer", v-text="thisSubTournament.bestOf")
+            span(slot="footer", v-text="bestOfCN(thisSubTournament.bestOf)")
           cell()
             span(slot="body") 得分制
-            span(slot="footer", v-text="thisSubTournament.scoringSys")
+            span(slot="footer", v-text="thisSubTournament.scoringSys + '分制'")
+          .description(v-text="thisSubTournament.description")
         .button-area
           weui-button(type="primary", :plain="true", @click="signUp", :disabled="thisSubTournament.hasSignedUp") {{signUpButtonText}}
           weui-button(type="primary", :plain="true", @click="signUpUmpire", :disabled="thisSubTournament.hasSignedUpUmpire") {{signUpUmpireButtonText}}
-          weui-button(type="primary", :plain="true", v-link="{path: '/tournaments/details/orders', query: $route.query}") 查看对阵
+          weui-button(type="primary", :plain="true", @click="viewOrder") 查看对阵
+      dialog(v-show="doublesSignUpShow", type="confirm", title="选择你的队伍", confirm-button="报名", cancel-button="取消", @weui-dialog-confirm="doublesSignUpConfirm", @weui-dialog-cancel="doublesSignUpCancel")
+        cells(type="access")
+          link-cell(v-link="{path: '/user/doubles/createDoubles'}")
+            span(slot="body") 去组队
+        cells(type="radio")
+          radio-cell(v-for="el in myDoubles", name="doubles", :value="el.objectId", :label="el.players[0].nickname + ' / ' + el.players[1].nickname", :picked.sync="doublesSelected")
 </template>
 
 <script>
@@ -49,14 +56,16 @@
     navbarView
   } from '../components'
   import _ from 'underscore'
-  import {isSingle} from '../js/utils'
+  import {isSingle, bestOfCN, disciplineCN, historyBack} from '../js/utils'
   import {
     Cells,
     Cell,
     CellsTitle,
     SelectCell,
     LinkCell,
-    Button
+    RadioCell,
+    Button,
+    Dialog
   } from 'vue-weui'
   import AV from '../js/AV'
   import nicetime from '@grepug/nicetime'
@@ -70,7 +79,9 @@
       CellsTitle,
       SelectCell,
       LinkCell,
-      'weui-button': Button
+      RadioCell,
+      'weui-button': Button,
+      Dialog
     },
     vuex: {
       getters: {
@@ -82,9 +93,13 @@
         addDoublesObjs,
         addTournaments,
         signUp ({dispatch}) {
+          var {state} = this.thisSubTournament
           if (this.thisSubTournamentHasSignedUp) return
-          var _isSingle = isSingle(this.thisSubTournament.discipline)
-          if (_isSingle) {
+          if (state !== 'signingUp') {
+            if (state === 'preSignUp') return window.alert('报名暂未开放')
+            return window.alert('报名已关闭')
+          }
+          if (isSingle(this.thisSubTournament.discipline)) {
             if (window.confirm('确认报名?')) {
               return AV.Cloud.run('tournament', {
                 method: 'signUp',
@@ -95,11 +110,29 @@
               })
             }
           } else {
+            this.doublesSignUpShow = true
             return
           }
         },
+        doublesSignUpConfirm ({dispatch}) {
+          if (window.confirm('确认报名?')) {
+            return AV.Cloud.run('tournament', {
+              method: 'signUp',
+              id: this.$route.query.sub,
+              doublesObjId: this.doublesSelected
+            }).then(ret => {
+              dispatch('SUBTOURNAMENT_SIGNUP', this.$route.query.id, this.$route.query.sub, this.doublesSelected)
+              this.doublesSignUpShow = false
+            })
+          }
+        },
         signUpUmpire ({dispatch}) {
+          var {state} = this.thisSubTournament
           if (this.thisSubTournamentHasSignedUpUmpire) return
+          if (state !== 'signingUp') {
+            if (state === 'preSignUp') return window.alert('报名暂未开放')
+            return window.alert('报名已关闭')
+          }
           if (window.confirm('确认报名裁判？')) {
             return AV.Cloud.run('tournament', {
               method: 'signUpUmpire',
@@ -109,6 +142,12 @@
             })
           }
         }
+      }
+    },
+    data () {
+      return {
+        doublesSignUpShow: false,
+        doublesSelected: ''
       }
     },
     computed: {
@@ -150,18 +189,29 @@
       signUpUmpireButtonText () {
         if (this.thisSubTournamentHasSignedUpUmpire) return '已报名裁判'
         return '裁判报名'
-      },
-      isChairUmpire () {
-        return this.thisTournament && this.thisTournament.chairUmpire.id === this.userObj.objectId
       }
+      // isChairUmpire () {
+      //   return this.thisTournament && this.thisTournament.chairUmpire.id === this.userObj.objectId
+      // }
     },
     methods: {
-      back () {
-        return window.history.back()
-      },
+      historyBack,
       tournamentStart () {
         return
-      }
+      },
+      doublesSignUpCancel () {
+        this.doublesSignUpShow = false
+      },
+      viewOrder () {
+        if (this.thisSubTournament.state !== 'orderReleased') return window.alert('对阵暂未发布')
+        this.$router.go({
+          path: '/tournaments/details/orders',
+          query: this.$route.query
+        })
+      },
+      nicetime,
+      bestOfCN,
+      disciplineCN
     },
     ready () {
       window.vm = this

@@ -10,8 +10,8 @@
       .teams
         cells(type="access")
           link-cell(v-link="", v-for="el in doubles")
-            span(slot="body") {{el.name}} （{{el.players[0].nickname}} / {{el.players[1].nickname}}）
-            span(slot="footer") 10 / 5
+            span(slot="body") {{el.name}} {{el.players[0].nickname}} / {{el.players[1].nickname}}
+            span(slot="footer")
 </template>
 
 <script>
