@@ -123,6 +123,8 @@
             }).then(ret => {
               dispatch('SUBTOURNAMENT_SIGNUP', this.$route.query.id, this.$route.query.sub, this.doublesSelected)
               this.doublesSignUpShow = false
+            }).catch(err => {
+              window.alert(err.message.errMsgCN + '\n请换一个队伍')
             })
           }
         },
@@ -147,7 +149,9 @@
     data () {
       return {
         doublesSignUpShow: false,
-        doublesSelected: ''
+        doublesSelected: '',
+        toastShow: false,
+        toastMsg: ''
       }
     },
     computed: {

@@ -2,7 +2,7 @@
   div
     navbar-view
       .left
-        a.link(href="javascript:;", @click="back") 返回
+        a.link(href="javascript:;", @click="historyBack") 返回
       .center 通知中心
       .right
         a.link(href="javascript:;")
@@ -11,7 +11,7 @@
         template(v-for="(index, val) in list", track-by="$index")
           link-cell(v-if="val && val.type === 'doublesInvitation'", @click="openDialog(index)")
             span(slot="body") {{val.inviterNickname}}邀请你和TA组成双打队伍
-            span(slot="footer")
+            span(slot="footer") {{val.date}}
     dialog(v-show="dialogShow", type="confirm", title="提示", confirm-button="接受", cancel-button="拒绝", @weui-dialog-confirm="dialogConfirm", @weui-dialog-cancel="dialogCancel")
       p 是否接受邀请
     toast-view(:text="toastText")
@@ -29,8 +29,10 @@
   } from 'vue-weui'
   import _ from 'underscore'
   import AV from '../js/AV'
+  import {historyBack} from '../js/utils'
   import {addOthersUserObj} from '../vuex/actions/user'
   import {getOthersUserObj, getNotifications} from '../vuex/getters'
+  import nicetime from '@grepug/nicetime'
 
   export default {
     components: {
@@ -57,10 +59,11 @@
             var r = _.findWhere(this.othersUserObj, {objectId: val.inviterObjId})
             if (r) {
               val.inviterNickname = r.nickname
+              val.date = nicetime({date: r.createdAt}).getTimeAgo()
               return val
             }
           }
-        })
+        }).reverse()
       }
     },
     data () {
@@ -71,9 +74,7 @@
       }
     },
     methods: {
-      back () {
-        window.history.back()
-      },
+      historyBack,
       openDialog (index) {
         this.dialogShow = true
         this.dialogIndex = index

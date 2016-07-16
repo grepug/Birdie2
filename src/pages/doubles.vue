@@ -2,7 +2,7 @@
   div
     navbar-view
       .left
-        a.link(href="javascript:;", @click="back") 返回
+        a.link(href="javascript:;", @click="historyBack") 返回
       .center 双打队伍
       .right
         a.link(v-link="{path: '/user/doubles/createDoubles'}") 创建
@@ -22,6 +22,7 @@
     Cells,
     LinkCell
   } from 'vue-weui'
+  import {historyBack} from '../js/utils'
   import {addDoublesObjs} from '../vuex/actions/data'
 
   export default {
@@ -41,9 +42,7 @@
     computed: {
     },
     methods: {
-      back () {
-        window.history.back()
-      }
+      historyBack
     },
     ready () {
       window.vm = this

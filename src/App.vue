@@ -30,9 +30,9 @@
             a(v-link="{path: '/notification'}") 通知中心
         .row
           div
-            a(v-link="{path: '/user'}") 用户中心
+            a(v-link="{path: '/user/doubles'}") 双打队伍
           div
-            a -
+            a(v-link="{path: '/user'}") 用户中心
           div
             a -
 </template>
