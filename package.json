@@ -19,6 +19,7 @@
     "node": "5.10.0"
   },
   "dependencies": {
+    "@grepug/nicetime": "^1.0.2",
     "babel-core": "*",
     "babel-plugin-transform-runtime": "*",
     "babel-preset-es2015": "*",
@@ -50,6 +51,7 @@
     "lolex": "*",
     "mint-ui": "*",
     "mocha": "*",
+    "nicetime": "^0.0.1",
     "nightwatch": "^0.9.4",
     "npm": "^3.10.2",
     "ora": "*",
@@ -71,7 +73,7 @@
     "wilddog": "*"
   },
   "devDependencies": {
-    "@grepug/nicetime": "^1.0.1",
+    "@grepug/nicetime": "^1.0.2",
     "avoscloud-sdk": "*",
     "babel-core": "*",
     "babel-loader": "*",

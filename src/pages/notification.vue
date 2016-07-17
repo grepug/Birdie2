@@ -59,7 +59,7 @@
             var r = _.findWhere(this.othersUserObj, {objectId: val.inviterObjId})
             if (r) {
               val.inviterNickname = r.nickname
-              val.date = nicetime({date: r.createdAt}).getTimeAgo()
+              val.date = nicetime({date: r.createdAt}).get('M-d H:i')
               return val
             }
           }
