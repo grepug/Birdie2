@@ -6,7 +6,8 @@
       .center 裁判
       .right
         a.link(href="javascript:;")
-    main
+    toast(type="loading", v-show="$loadingRouteData") 加载中...
+    main(v-if="!$loadingRouteData")
       template(v-for="tournament in myUmpiredTournaments")
         cells-title {{tournament.name}}
         cells(type="access")
@@ -24,7 +25,8 @@
   import {
     Cells,
     LinkCell,
-    CellsTitle
+    CellsTitle,
+    Toast
   } from 'vue-weui'
   import {addTournaments} from '../../vuex/actions/data'
 
@@ -33,7 +35,13 @@
       navbarView,
       Cells,
       LinkCell,
-      CellsTitle
+      CellsTitle,
+      Toast
+    },
+    route: {
+      data () {
+        return this.addTournaments()
+      }
     },
     vuex: {
       getters: {
@@ -57,13 +65,6 @@
     },
     ready () {
       window.vm = this
-      this.addTournaments()
-      // AV.Cloud.run('tournament', {
-      //   method: 'getMyUmpireSubTournaments'
-      // }).then(ret => {
-      //   this.list = ret
-      //   console.log(ret)
-      // })
     }
   }
 </script>

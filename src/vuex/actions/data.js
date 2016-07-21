@@ -27,12 +27,6 @@ export const addTournaments = ({dispatch, state}, ids) => {
   }).then(ret => {
     console.log(ret)
     dispatch('ADD_TOURNAMENTS', ret)
-    // dispatch('ADD_MY_UMPIRED_TOURNAMENTS', ret.map(el => {
-    //   el.subTournaments = el.subTournaments.map(el2 => {
-    //     if (el2.umpires.indexOf(state.user.userObj.objectId) !== -1) return el2
-    //   }).filter(x => x)
-    //   return el.subTournaments.length && el
-    // }).filter(x => x))
     dispatch('ADD_MY_UMPIRED_TOURNAMENTS', duplicate(ret).map(el => {
       el.subTournaments = el.subTournaments.map(el2 => {
         if (el2.umpires.indexOf(state.user.userObj.objectId) !== -1) return el2
