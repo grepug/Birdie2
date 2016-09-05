@@ -48,6 +48,12 @@ export default function (router) {
     '/user/doubles': {
       component: view('./pages/doubles')
     },
+    '/user/bigTeam': {
+      component: view('./pages/user/bigTeam')
+    },
+    '/user/bigTeam/create': {
+      component: view('./pages/user/createBigTeam')
+    },
     '/user/doubles/createDoubles': {
       component: view('./pages/createDoubles')
     },

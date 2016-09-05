@@ -12,7 +12,10 @@
           span(slot="body") 个人信息
           span(slot="footer")
         link-cell(v-link="{path: '/user/doubles'}")
-          span(slot="body") 我的双打队伍
+          span(slot="body") 双打队伍
+          span(slot="footer")
+        link-cell(v-link="{path: '/user/bigTeam'}")
+          span(slot="body") 团队
           span(slot="footer")
       cells(type="access")
         link-cell(v-link="{path: '/user/settings'}")

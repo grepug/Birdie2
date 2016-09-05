@@ -1,5 +1,5 @@
 import AV from '../../js/AV'
-import _ from 'underscore'
+import _ from 'lodash'
 import {beArray} from '../../js/utils'
 
 export const getAllUsers = function ({ dispatch, state }) {
@@ -12,7 +12,7 @@ export const getAllUsers = function ({ dispatch, state }) {
 
 export const addOthersUserObj = function ({dispatch, state}, userObjIds) {
   var unstoredObjs = beArray(userObjIds).map(id => {
-    var r = _.findWhere(state.user.userObjs, {objectId: id})
+    var r = _.find(state.user.userObjs, {objectId: id})
     if (!r && id !== state.user.userObj.objectId) return id
     return null
   }).filter(x => x)
@@ -26,6 +26,17 @@ export const addOthersUserObj = function ({dispatch, state}, userObjIds) {
   }).catch(err => console.log(err))
 }
 
-export const setOthersUserObj = function ({dispatch}, userObjIds) {
-
+export const addDoubles = function ({dispatch, state}, doublesObjIds) {
+  var unstoredObjs = beArray(doublesObjIds).map(id => {
+    return _.find(state.user.doubles, {objectId: id}) ? null : id
+  }).filter(x => x)
+  if (!unstoredObjs.length) return Promise.resolve()
+  return AV.Cloud.run('doubles', {
+    method: 'getDoublesByIds',
+    doublesObjIds: unstoredObjs
+  }).then(ret => {
+    if (!ret || !ret.length) return
+    dispatch('ADD_DOUBLES', ret)
+    return Promise.resolve(_.flattenDeep(ret.map(el => el.players)))
+  }).catch(err => console.log(err))
 }

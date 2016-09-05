@@ -34,7 +34,7 @@
           div
             a(v-link="{path: '/user'}") 用户中心
           div
-            a -
+            a(v-link="{path: '/user/bigTeam'}") 用户中心
 </template>
 
 <script>
