@@ -41,8 +41,9 @@
           .description(v-text="thisSubTournament.description")
         .button-area
           weui-button(type="primary", :plain="true", @click="signUp", :disabled="thisSubTournament.hasSignedUp") {{signUpButtonText}}
-          weui-button(type="primary", :plain="true", @click="signUpUmpire", :disabled="thisSubTournament.hasSignedUpUmpire") {{signUpUmpireButtonText}}
+          //- weui-button(type="primary", :plain="true", @click="signUpUmpire", :disabled="thisSubTournament.hasSignedUpUmpire") {{signUpUmpireButtonText}}
           weui-button(type="primary", :plain="true", @click="viewOrder") 查看对阵
+          weui-button(type="primary", :plain="true", @click="ladderReady", v-show="signUpButtonText === '已报名'") 天梯准备
       dialog(v-show="doublesSignUpShow", type="confirm", title="选择你的队伍", confirm-button="报名", cancel-button="取消", @weui-dialog-confirm="doublesSignUpConfirm", @weui-dialog-cancel="doublesSignUpCancel")
         cells(type="access")
           link-cell(v-link="{path: '/user/doubles/createDoubles'}")
@@ -82,6 +83,15 @@
       RadioCell,
       'weui-button': Button,
       Dialog
+    },
+    router: {
+      data () {
+        // var _isSingle(isSingle(this.thisSubTournament.discipline))
+        // return AV.Cloud.run('tournamentRealtime', {
+        //   method: 'getLadder',
+        //
+        // })
+      }
     },
     vuex: {
       getters: {
